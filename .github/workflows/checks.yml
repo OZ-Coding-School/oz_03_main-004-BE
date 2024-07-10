@@ -16,5 +16,6 @@ jobs:
         password: ${{ secrets.DOCKERHUB_TOKEN }}
     - name: Check Out - pull repository code # GitHub에 있는 코드를 작업 환경으로
       uses: actions/checkout@v2
-    - name: Run Flake8 for Lint Check # pep8 sytle guide를 잘 준수하고 있는지 체크
-      run: docker-compose run --rm app sh -c 'flake8'
+    - name: Run Test-Code
+      run: docker-compose run --rm app sh -c 'python manage.py wait_for_db && python manage.py test'
+
