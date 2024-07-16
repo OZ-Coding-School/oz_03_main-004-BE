@@ -1,4 +1,4 @@
-FROM python:3.9-alpine
+FROM python:3.11-alpine3.19
 
 # LABEL 명령어는 이미지에 메타데이터를 추가합니다. 여기서는 이미지의 유지 관리자를 "dayeonkim"로 지정하고 있습니다.
 LABEL maintainer="frog"

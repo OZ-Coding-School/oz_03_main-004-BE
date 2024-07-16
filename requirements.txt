@@ -1,6 +1,14 @@
-django==4.2
+django>=5.0.1,<6.0.0
 djangorestframework>=3.14.0,<4.0.0
 
 # Postgresql connector
 psycopg2-binary>=2.9.9,<3.0.0
 python-dotenv >=1.0.1
+
+# JWT
+djangorestframework-simplejwt
+django-allauth
+dj-rest-auth
+
+requests
+
