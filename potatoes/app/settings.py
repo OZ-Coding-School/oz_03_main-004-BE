@@ -33,30 +33,29 @@ DJANGO_SYSTEM_APPS = [
 ]
 
 CUSTOM_USER_APPS = [
-    # "users.apps.UsersConfig",
-    # django-rest-auth
     "core",
-    "users",
+    "attendances.apps.AttendancesConfig",
+    "baekjoons.apps.BaekjoonsConfig",
+    "common.apps.CommonConfig",
+    "githubs.apps.GithubsConfig",
+    "potato_types.apps.PotatoTypesConfig",
+    "stacks.apps.StacksConfig",
+    "users.apps.UsersConfig",
+    "user_stacks.apps.UserStacksConfig",
+
+    # django-rest-auth
     "rest_framework",
     "rest_framework.authtoken",
     "rest_framework_simplejwt",
     "rest_framework_simplejwt.token_blacklist",
     "dj_rest_auth",
     "dj_rest_auth.registration",
+    
     # django-allauth
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
     "requests",
-    "attendances",
-    "baekjoons",
-    "common",
-    "githubs",
-    "potato_types",
-    "stacks",
-    "user_stacks",
-    
-    
 ]
 
 INSTALLED_APPS = DJANGO_SYSTEM_APPS + CUSTOM_USER_APPS

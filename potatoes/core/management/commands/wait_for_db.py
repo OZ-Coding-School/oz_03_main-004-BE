@@ -6,7 +6,7 @@ wait_for_db => django가 db가 준비될 때까지 연결을 재시도하게 해
 import time
 
 from django.core.management.base import BaseCommand
-from django.db import connections # db와 연결을 시도
+from django.db import connections  # db와 연결을 시도
 from django.db.utils import OperationalError
 from psycopg2 import OperationalError as Psycopg2OperationalError
 
