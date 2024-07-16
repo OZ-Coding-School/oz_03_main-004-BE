@@ -2,8 +2,9 @@ from django.contrib.auth.models import (
     AbstractBaseUser,
     # AbstractUser,
     BaseUserManager,
+    PermissionsMixin
 )
-from django.contrib.auth.mixins import PermissionMixin
+# from django.contrib.auth.mixins import PermissionMixin
 from django.db import models
 
 class UserManager(BaseUserManager):
@@ -31,7 +32,7 @@ class UserManager(BaseUserManager):
         return user
     
     
-class User(AbstractBaseUser, PermissionMixin):
+class User(AbstractBaseUser, PermissionsMixin):
     
     LOGIN_TYPES = [
         ("normal", "일반"),
