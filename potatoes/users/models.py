@@ -34,22 +34,15 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser, PermissionsMixin):
-    LOGIN_TYPES = [
-        ("normal", "일반"),
-        ("google", "구글"),
-        ("github", "깃허브"),
-    ]
 
     # 로그인 관련 필드
     email = models.CharField(max_length=255, null=False, unique=True)
     password = models.CharField(max_length=255, null=False)
-    login_type = models.CharField(max_length=20, choices=LOGIN_TYPES, default="normal")
 
     # 프로필 관련 필드
     name = models.CharField(max_length=20, null=False)
     nickname = models.CharField(max_length=255, null=False, unique=True)
     birthday = models.DateField(blank=True, null=True)
-    description = models.CharField(max_length=255, null=True)
     profile_url = models.CharField(max_length=255, null=True)
     github_id = models.CharField(max_length=255, null=True)
     baekjoon_id = models.CharField(max_length=255, null=True)
