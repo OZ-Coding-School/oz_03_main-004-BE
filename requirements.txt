@@ -11,4 +11,8 @@ django-allauth
 dj-rest-auth
 
 requests
+requests-oauthlib
+cryptography
+
+
 
