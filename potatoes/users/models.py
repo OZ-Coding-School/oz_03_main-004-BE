@@ -47,6 +47,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     github_id = models.CharField(max_length=255, null=True)
     baekjoon_id = models.CharField(max_length=255, null=True)
 
+    # 감자 관련 필드
+    level = models.IntegerField(null = False, default=0)
+    exp = models.IntegerField(null = False, default=0)
+    
     # Permissions Mixin : 유저의 권한 관리
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
