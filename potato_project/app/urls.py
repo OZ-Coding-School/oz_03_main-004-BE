@@ -1,3 +1,4 @@
+# app/urls.py
 from django.contrib import admin
 from django.urls import include, path
 
@@ -7,4 +8,5 @@ urlpatterns = [
     path("users/", include("dj_rest_auth.registration.urls")),
     path("users/", include("allauth.urls")),
     path("users/", include("users.urls")),
+    path("baekjoons/", include("baekjoons.urls")),
 ]
