@@ -37,14 +37,25 @@ CUSTOM_USER_APPS = [
     # my app
     "users.apps.UsersConfig",
     "core",
+    "attendances.apps.AttendancesConfig",
+    "baekjoons.apps.BaekjoonsConfig",
+    "common.apps.CommonConfig",
+    "githubs.apps.GithubsConfig",
+    "potato_types.apps.PotatoTypesConfig",
+    "stacks.apps.StacksConfig",
+    "users.apps.UsersConfig",
+    "user_stacks.apps.UserStacksConfig",
+
     # django-rest-framework
     "rest_framework",
     "rest_framework.authtoken",
     "rest_framework_simplejwt",
     "rest_framework_simplejwt.token_blacklist",
-    # dj-rest-auth
+  
+    # django-rest-auth
     "dj_rest_auth",
     "dj_rest_auth.registration",
+    
     # django-allauth
     "allauth",
     "allauth.account",
