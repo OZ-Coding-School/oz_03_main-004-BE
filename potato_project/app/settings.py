@@ -191,6 +191,17 @@ SOCIAL_AUTH_GITHUB_CLIENT_ID = os.environ.get("SOCIAL_AUTH_GITHUB_CLIENT_ID")
 SOCIAL_AUTH_GITHUB_SECRET = os.environ.get("SOCIAL_AUTH_GITHUB_SECRET")
 STATE = os.environ.get("STATE")
 
+SOCIALACCOUNT_PROVIDERS = {
+    'github': {
+        'APP': {
+            'client_id': os.environ.get("SOCIAL_AUTH_GITHUB_CLIENT_ID"),
+            'secret': os.environ.get("SOCIAL_AUTH_GITHUB_SECRET"),
+            'key': ''
+        }
+    }
+}
+
+
 SOCIALACCOUNT_LOGIN_ON_GET = True
 LOGIN_REDIRECT_URL = "main"
 ACCOUNT_LOGOUT_REDIRECT_URL = "index"
