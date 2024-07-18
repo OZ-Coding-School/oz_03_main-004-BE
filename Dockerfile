@@ -12,7 +12,7 @@ ENV PYTHONUNBUFFERED 1
 # 이 파일은 필요한 Python 패키지들을 명시합니다.
 COPY ./requirements.txt /tmp/requirements.txt
 COPY ./requirements.dev.txt /tmp/requirements.dev.txt
-COPY ./potatoes /app
+COPY ./potato_project /app
 
 WORKDIR /app
 EXPOSE 8000
