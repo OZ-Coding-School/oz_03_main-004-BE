@@ -43,7 +43,6 @@ CUSTOM_USER_APPS = [
     "githubs.apps.GithubsConfig",
     "potato_types.apps.PotatoTypesConfig",
     "stacks.apps.StacksConfig",
-    "users.apps.UsersConfig",
     "user_stacks.apps.UserStacksConfig",
 
     # django-rest-framework
