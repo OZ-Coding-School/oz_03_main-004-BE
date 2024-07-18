@@ -41,9 +41,11 @@ CUSTOM_USER_APPS = [
     "baekjoons.apps.BaekjoonsConfig",
     "common.apps.CommonConfig",
     "githubs.apps.GithubsConfig",
+    "potatoes.apps.PotatoesConfig",
     "potato_types.apps.PotatoTypesConfig",
     "stacks.apps.StacksConfig",
     "user_stacks.apps.UserStacksConfig",
+    "todos.apps.TodosConfig",
 
     # django-rest-framework
     "rest_framework",

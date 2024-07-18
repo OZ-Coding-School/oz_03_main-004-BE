@@ -1,7 +1,8 @@
 from django.db import models
 from django.conf import settings  # 예시로 Django 기본 유저 모델 사용
+from common.models import TimeStampedModel  # TimeStampedModel을 가져오기 위해 사용
 
-class UserStack(models.Model):
+class UserStack(TimeStampedModel):
     user_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name="유저아이디")
     stack_id = models.BigIntegerField(verbose_name="스택아이디")
 
