@@ -1,10 +1,7 @@
-from django.contrib.auth.models import (
-    AbstractBaseUser,  
-    BaseUserManager,
-    PermissionsMixin,
-)
+from common.models import TimeStampedModel
+from django.contrib.auth.models import (AbstractBaseUser, BaseUserManager,
+                                        PermissionsMixin)
 from django.db import models
-from common.models import TimeStampedModel 
 
 
 class UserManager(BaseUserManager):
@@ -33,7 +30,6 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser, PermissionsMixin, TimeStampedModel):
-
     # 로그인 관련 필드
     email = models.CharField(max_length=255, null=False, unique=True)
     password = models.CharField(max_length=255, null=False)
@@ -47,9 +43,9 @@ class User(AbstractBaseUser, PermissionsMixin, TimeStampedModel):
     baekjoon_id = models.CharField(max_length=255, null=True)
 
     # 감자 관련 필드
-    potato_level = models.PositiveIntegerField(null = False, default=0)
-    potato_exp = models.PositiveIntegerField(null = False, default=0)
-    
+    potato_level = models.PositiveIntegerField(null=False, default=0)
+    potato_exp = models.PositiveIntegerField(null=False, default=0)
+
     # Permissions Mixin : 유저의 권한 관리
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)

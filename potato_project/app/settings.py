@@ -46,17 +46,14 @@ CUSTOM_USER_APPS = [
     "stacks.apps.StacksConfig",
     "user_stacks.apps.UserStacksConfig",
     "todos.apps.TodosConfig",
-
     # django-rest-framework
     "rest_framework",
     "rest_framework.authtoken",
     "rest_framework_simplejwt",
     "rest_framework_simplejwt.token_blacklist",
-  
     # django-rest-auth
     "dj_rest_auth",
     "dj_rest_auth.registration",
-    
     # django-allauth
     "allauth",
     "allauth.account",
