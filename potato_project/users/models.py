@@ -49,9 +49,6 @@ class User(AbstractBaseUser, PermissionsMixin, TimeStampedModel):
     potato_level = models.PositiveIntegerField(null=False, default=0)
     potato_exp = models.PositiveIntegerField(null=False, default=0)
 
-    potato_level = models.PositiveIntegerField(null=False, default=0)
-    potato_exp = models.PositiveIntegerField(null=False, default=0)
-
     # Permissions Mixin : 유저의 권한 관리
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)

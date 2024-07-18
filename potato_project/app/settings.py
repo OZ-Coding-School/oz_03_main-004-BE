@@ -18,10 +18,8 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DEBUG") == "True"  # 문자열 'True'를 boolean True로 변환
-
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", []).split(
-    ","
-)  # 쉼표로 구분된 문자열을 리스트로 변환
+# 쉼표로 구분된 문자열을 리스트로 변환
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", []).split(",")  
 
 # Application definition
 
