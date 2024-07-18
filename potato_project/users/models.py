@@ -1,7 +1,10 @@
-from common.models import TimeStampedModel
-from django.contrib.auth.models import (AbstractBaseUser, BaseUserManager,
-                                        PermissionsMixin)
+from django.contrib.auth.models import (
+    AbstractBaseUser,
+    BaseUserManager,
+    PermissionsMixin,
+)
 from django.db import models
+from common.models import TimeStampedModel
 
 
 class UserManager(BaseUserManager):
@@ -46,13 +49,18 @@ class User(AbstractBaseUser, PermissionsMixin, TimeStampedModel):
     potato_level = models.PositiveIntegerField(null=False, default=0)
     potato_exp = models.PositiveIntegerField(null=False, default=0)
 
+    potato_level = models.PositiveIntegerField(null=False, default=0)
+    potato_exp = models.PositiveIntegerField(null=False, default=0)
+
     # Permissions Mixin : 유저의 권한 관리
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["nickname", "password"]
-    objects = UserManager()  # 유저를 생성 및 관리 (유저를 구분해서 관리하기 위해 - 관리자계정, 일반계정)
+    objects = (
+        UserManager()
+    )  # 유저를 생성 및 관리 (유저를 구분해서 관리하기 위해 - 관리자계정, 일반계정)
 
     def __str__(self):
         """

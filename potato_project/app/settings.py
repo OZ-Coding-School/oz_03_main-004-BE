@@ -19,7 +19,9 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DEBUG") == "True"  # 문자열 'True'를 boolean True로 변환
 
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", []).split(",")  # 쉼표로 구분된 문자열을 리스트로 변환
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", []).split(
+    ","
+)  # 쉼표로 구분된 문자열을 리스트로 변환
 
 # Application definition
 
@@ -162,11 +164,12 @@ STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 REST_FRAMEWORK = {
-    # "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
-    # "DEFAULT_AUTHENTICATION_CLASSES": (
-    #     "rest_framework.authentication.SessionAuthentication",
-    #     "dj_rest_auth.jwt_auth.JWTCookieAuthentication",
-    # ),
+    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework.authentication.SessionAuthentication",
+        "dj_rest_auth.jwt_auth.JWTCookieAuthentication",
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
 }
 
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
@@ -183,10 +186,22 @@ SIMPLE_JWT = {
     "REFRESH_TOKEN_LIFETIME": timedelta(days=30),
     "ROTATE_REFRESH_TOKENS": False,
     "BLACKLIST_AFTER_ROTATION": True,
+    'AUTH_HEADER_TYPES': ('Bearer',),
 }
 SOCIAL_AUTH_GITHUB_CLIENT_ID = os.environ.get("SOCIAL_AUTH_GITHUB_CLIENT_ID")
 SOCIAL_AUTH_GITHUB_SECRET = os.environ.get("SOCIAL_AUTH_GITHUB_SECRET")
 STATE = os.environ.get("STATE")
+
+SOCIALACCOUNT_PROVIDERS = {
+    "github": {
+        "APP": {
+            "client_id": os.environ.get("SOCIAL_AUTH_GITHUB_CLIENT_ID"),
+            "secret": os.environ.get("SOCIAL_AUTH_GITHUB_SECRET"),
+            "key": "",
+        }
+    }
+}
+
 
 SOCIALACCOUNT_LOGIN_ON_GET = True
 LOGIN_REDIRECT_URL = "main"
