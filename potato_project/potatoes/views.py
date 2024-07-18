@@ -1,5 +1,6 @@
-from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.views import APIView
+
 from .models import Potato
 from .serializers import PotatoSerializer
 
@@ -10,7 +11,8 @@ class PotatoesList(APIView):
         potatoes = Potato.objects.all()
         serializer = PotatoSerializer(potatoes, many=True)
         return Response(serializer.data)
-    
+
+
 class PotatoDetail(APIView):
     def get(self, request):
         potato = Potato.objects.filter(user=request.user)

@@ -1,7 +1,8 @@
-from django.db import models  
-from common.models import TimeStampedModel 
-from users.models import User
+from common.models import TimeStampedModel
+from django.db import models
 from potato_types.models import PotatoType
+from users.models import User
+
 
 class Potato(TimeStampedModel):
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)

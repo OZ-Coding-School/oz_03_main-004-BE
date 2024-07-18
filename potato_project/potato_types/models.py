@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class PotatoType(models.Model):
     # 추가 필드 정의
     potato_name = models.CharField(max_length=255, verbose_name="감자이름")
