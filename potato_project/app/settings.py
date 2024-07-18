@@ -18,8 +18,8 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DEBUG") == "True"  # 문자열 'True'를 boolean True로 변환
-
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", []).split(",")  # 쉼표로 구분된 문자열을 리스트로 변환
+# 쉼표로 구분된 문자열을 리스트로 변환
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", []).split(",")  
 
 # Application definition
 
@@ -46,17 +46,14 @@ CUSTOM_USER_APPS = [
     "stacks.apps.StacksConfig",
     "user_stacks.apps.UserStacksConfig",
     "todos.apps.TodosConfig",
-
     # django-rest-framework
     "rest_framework",
     "rest_framework.authtoken",
     "rest_framework_simplejwt",
     "rest_framework_simplejwt.token_blacklist",
-  
     # django-rest-auth
     "dj_rest_auth",
     "dj_rest_auth.registration",
-    
     # django-allauth
     "allauth",
     "allauth.account",
@@ -169,6 +166,7 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework.authentication.SessionAuthentication",
         "dj_rest_auth.jwt_auth.JWTCookieAuthentication",
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
 }
 
@@ -186,17 +184,18 @@ SIMPLE_JWT = {
     "REFRESH_TOKEN_LIFETIME": timedelta(days=30),
     "ROTATE_REFRESH_TOKENS": False,
     "BLACKLIST_AFTER_ROTATION": True,
+    'AUTH_HEADER_TYPES': ('Bearer',),
 }
 SOCIAL_AUTH_GITHUB_CLIENT_ID = os.environ.get("SOCIAL_AUTH_GITHUB_CLIENT_ID")
 SOCIAL_AUTH_GITHUB_SECRET = os.environ.get("SOCIAL_AUTH_GITHUB_SECRET")
 STATE = os.environ.get("STATE")
 
 SOCIALACCOUNT_PROVIDERS = {
-    'github': {
-        'APP': {
-            'client_id': os.environ.get("SOCIAL_AUTH_GITHUB_CLIENT_ID"),
-            'secret': os.environ.get("SOCIAL_AUTH_GITHUB_SECRET"),
-            'key': ''
+    "github": {
+        "APP": {
+            "client_id": os.environ.get("SOCIAL_AUTH_GITHUB_CLIENT_ID"),
+            "secret": os.environ.get("SOCIAL_AUTH_GITHUB_SECRET"),
+            "key": "",
         }
     }
 }

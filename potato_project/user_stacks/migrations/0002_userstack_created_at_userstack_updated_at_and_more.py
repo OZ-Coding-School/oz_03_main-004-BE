@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("stacks", "0001_initial"),
         ("user_stacks", "0001_initial"),

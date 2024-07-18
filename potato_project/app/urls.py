@@ -9,4 +9,5 @@ urlpatterns = [
     path("users/", include("allauth.urls")),
     path("users/", include("users.urls")),
     path("baekjoons/", include("baekjoons.urls")),
+    path('attendances/', include('attendances.urls')), 
 ]
