@@ -4,6 +4,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 from cryptography.fernet import Fernet
+from cryptography.fernet import Fernet
 
 load_dotenv()  # .env 파일 로드
 
@@ -82,6 +83,25 @@ FERNET_KEY = load_key()
 ######
 
 
+#####
+## 비밀 키 파일 경로
+KEY_FILE_PATH = os.path.join(BASE_DIR, 'fernet.key')
+
+# 비밀 키가 없으면 생성 (생성된 키는 서버에서 보관하고, 실제 서비스에서는 이 부분을 주석 처리합니다)
+if not os.path.exists(KEY_FILE_PATH):
+    raise RuntimeError("key file이 없습니다. Please generate it using generate_key.py.")
+
+# 파일에서 비밀 키 읽기
+def load_key():
+    #파일을 바이너리 읽기모드로 연다는 rb
+    with open(KEY_FILE_PATH, 'rb') as key_file:
+        return key_file.read()
+
+# 비밀 키 설정
+FERNET_KEY = load_key()
+######
+
+
 
 # custom user model
 AUTH_USER_MODEL = "users.User"
@@ -92,6 +112,9 @@ AUTHENTICATION_BACKENDS = (
     "django.contrib.auth.backends.ModelBackend",
     "allauth.account.auth_backends.AuthenticationBackend",
 )
+
+#깃허브 파이프라인 함수 추가
+
 
 #깃허브 파이프라인 함수 추가
 
@@ -231,5 +254,25 @@ SOCIALACCOUNT_LOGIN_ON_GET = True
 # ACCOUNT_LOGOUT_REDIRECT_URL = "index"
 ACCOUNT_LOGOUT_ON_GET = True
 
-# SESSION_ENGINE = "django.contrib.sessions.backends.db"
-# SESSION_COOKIE_SECURE = False  # 개발 환경에서는 False, 프로덕션에서는 True로 설정
+SESSION_ENGINE = "django.contrib.sessions.backends.db"
+SESSION_COOKIE_SECURE = False  # 개발 환경에서는 False, 프로덕션에서는 True로 설정
+
+SOCIALACCOUNT_PROVIDERS = {
+    "github": {
+        "APP": {
+            "client_id": os.environ.get("SOCIAL_AUTH_GITHUB_CLIENT_ID"),
+            "secret": os.environ.get("SOCIAL_AUTH_GITHUB_SECRET"),
+            "key": "",
+        }
+    }
+}
+#임의에 secret_key 입력해둠
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', '@4zo44=ho#(x5kw0l$ycfnbm&1%y%zw&m-oz*4_#6y5b(#)@wg')
+
+SOCIALACCOUNT_LOGIN_ON_GET = True
+LOGIN_REDIRECT_URL = "main"
+ACCOUNT_LOGOUT_REDIRECT_URL = "index"
+ACCOUNT_LOGOUT_ON_GET = True
+
+SESSION_ENGINE = "django.contrib.sessions.backends.db"
+SESSION_COOKIE_SECURE = False  # 개발 환경에서는 False, 프로덕션에서는 True로 설정
