@@ -38,12 +38,11 @@ class User(AbstractBaseUser, PermissionsMixin, TimeStampedModel):
     password = models.CharField(max_length=255, null=False)
 
     # 프로필 관련 필드
-    name = models.CharField(max_length=20, null=False)
+    # name = models.CharField(max_length=20, null=False)
     nickname = models.CharField(max_length=255, null=False, unique=True)
-    birthday = models.DateField(blank=True, null=True)
     profile_url = models.CharField(max_length=255, null=True)
     github_id = models.CharField(max_length=255, null=True)
-    baekjoon_id = models.CharField(max_length=255, null=True)
+    baekjoon_id = models.CharField(max_length=255, null=True, default='None')
 
     # 감자 관련 필드
     potato_level = models.PositiveIntegerField(null=False, default=0)
