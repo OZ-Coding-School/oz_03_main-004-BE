@@ -233,12 +233,12 @@ ACCOUNT_LOGOUT_ON_GET = True
 SESSION_ENGINE = "django.contrib.sessions.backends.db"
 SESSION_COOKIE_SECURE = False  # 개발 환경에서는 False, 프로덕션에서는 True로 설정
 
-# SOCIALACCOUNT_PROVIDERS = {
-#     'github': {
-#         'APP': {
-#             'client_id': os.environ.get("SOCIAL_AUTH_GITHUB_CLIENT_ID"),
-#             'secret': os.environ.get("SOCIAL_AUTH_GITHUB_SECRET"),
-#             'key': '',  
-#         }
-#     }
-# }
+SOCIALACCOUNT_PROVIDERS = {
+    'github': {
+        'APP': {
+            'client_id': os.environ.get("SOCIAL_AUTH_GITHUB_CLIENT_ID"),
+            'secret': os.environ.get("SOCIAL_AUTH_GITHUB_SECRET"),
+            'key': '',  
+        }
+    }
+}
