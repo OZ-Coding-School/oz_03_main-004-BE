@@ -10,4 +10,4 @@ class Potato(TimeStampedModel):
     is_selected = models.BooleanField(blank=True, null=True)
 
     def __str__(self):
-        return self.potato_nickname or "Unnamed Potato"
+        return self.potato_type_id or "Unnamed Potato"
