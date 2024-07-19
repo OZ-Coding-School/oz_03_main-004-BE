@@ -38,7 +38,6 @@ def github_callback(request):
     client_id = os.environ.get("SOCIAL_AUTH_GITHUB_CLIENT_ID")
     client_secret = os.environ.get("SOCIAL_AUTH_GITHUB_SECRET")
     code = request.GET.get("code")
-    state = request.GET.get("state")
     error = request.GET.get("error")
 
     if error:
