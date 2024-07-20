@@ -26,7 +26,7 @@ class PotatoSelectPatch(APIView):
         potato = Potato.objects.filter(user_id=user_id, data=request.data, partial=True)
 
         if not potato:
-            return Response({"detail" : "Not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"detail": "Not found"}, status=status.HTTP_404_NOT_FOUND)
 
         if "is_selected" in request.data:
             is_selected = request.data["is_selected"]
@@ -34,9 +34,14 @@ class PotatoSelectPatch(APIView):
                 # 유저가 가지고 있는 모든 감자 is_selected 값을 False로
                 Potato.objects.filter(user_id=user_id).update(is_selected=False)
             # 유저가 선택한 감자의 is_selected 값을 True로
-            serializer = PotatoSerializer(potato, data={"is_selected": is_selected}, partial=True)
+            serializer = PotatoSerializer(
+                potato, data={"is_selected": is_selected}, partial=True
+            )
         else:
-            return Response({"detail": "is_selected field is required"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"detail": "is_selected field is required"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         if serializer.is_valid():
             serializer.save()
