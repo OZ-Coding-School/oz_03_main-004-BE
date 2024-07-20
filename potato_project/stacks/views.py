@@ -14,7 +14,7 @@ class UserStackList(APIView):
         return Response(serializer.data)
 
 
-#
+# 유저 스택 리스트 저장
 class UserStackCreate(APIView):
     def post(self, request, user_id):
         stacks = Stack.objects.filter(user_id=user_id, data=request.data)
