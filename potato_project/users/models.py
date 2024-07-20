@@ -1,9 +1,6 @@
 from common.models import TimeStampedModel
-from django.contrib.auth.models import (
-    AbstractBaseUser,
-    BaseUserManager,
-    PermissionsMixin,
-)
+from django.contrib.auth.models import (AbstractBaseUser, BaseUserManager,
+                                        PermissionsMixin)
 from django.db import models
 
 
@@ -41,7 +38,7 @@ class User(AbstractBaseUser, PermissionsMixin, TimeStampedModel):
     email = models.CharField(max_length=255, null=True) # 아예 빼는것도 고려
     profile_url = models.CharField(max_length=255, null=True)
     github_id = models.CharField(max_length=255, null=True)
-    baekjoon_id = models.CharField(max_length=255, null=True, default="")
+    baekjoon_id = models.CharField(max_length=255, null=True, default="None")
 
     # 감자 관련 필드
     potato_level = models.PositiveIntegerField(null=False, default=0)
@@ -51,9 +48,8 @@ class User(AbstractBaseUser, PermissionsMixin, TimeStampedModel):
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
 
-    USERNAME_FIELD = "username"
-    REQUIRED_FIELDS = ["profile_url", "github_id"]
-    
+    USERNAME_FIELD = "email"
+    REQUIRED_FIELDS = ["nickname", "password"]
     objects = UserManager()  # 유저를 생성 및 관리 (유저를 구분해서 관리하기 위해 - 관리자계정, 일반계정)
 
     def __str__(self):
