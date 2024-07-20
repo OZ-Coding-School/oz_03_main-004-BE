@@ -4,7 +4,6 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 from cryptography.fernet import Fernet
-from cryptography.fernet import Fernet
 
 load_dotenv()  # .env 파일 로드
 
@@ -17,11 +16,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get("SECRET_KEY")
-GITHUB_ACCESS_TOKEN = os.environ.get("GITHUB_ACCESS_TOKEN")
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DEBUG") == "True"  # 문자열 'True'를 boolean True로 변환
 # 쉼표로 구분된 문자열을 리스트로 변환
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", []).split(",")
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", []).split(",")  
 
 # Application definition
 
@@ -83,25 +82,6 @@ FERNET_KEY = load_key()
 ######
 
 
-#####
-## 비밀 키 파일 경로
-KEY_FILE_PATH = os.path.join(BASE_DIR, 'fernet.key')
-
-# 비밀 키가 없으면 생성 (생성된 키는 서버에서 보관하고, 실제 서비스에서는 이 부분을 주석 처리합니다)
-if not os.path.exists(KEY_FILE_PATH):
-    raise RuntimeError("key file이 없습니다. Please generate it using generate_key.py.")
-
-# 파일에서 비밀 키 읽기
-def load_key():
-    #파일을 바이너리 읽기모드로 연다는 rb
-    with open(KEY_FILE_PATH, 'rb') as key_file:
-        return key_file.read()
-
-# 비밀 키 설정
-FERNET_KEY = load_key()
-######
-
-
 
 # custom user model
 AUTH_USER_MODEL = "users.User"
@@ -112,9 +92,6 @@ AUTHENTICATION_BACKENDS = (
     "django.contrib.auth.backends.ModelBackend",
     "allauth.account.auth_backends.AuthenticationBackend",
 )
-
-#깃허브 파이프라인 함수 추가
-
 
 #깃허브 파이프라인 함수 추가
 
@@ -212,7 +189,7 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework.authentication.SessionAuthentication",
         "dj_rest_auth.jwt_auth.JWTCookieAuthentication",
-        "rest_framework_simplejwt.authentication.JWTAuthentication",
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
 }
 
@@ -231,13 +208,7 @@ SIMPLE_JWT = {
     'ROTATE_REFRESH_TOKENS': False,                 # 리프레시 토큰 순환 사용 여부
     'BLACKLIST_AFTER_ROTATION': False,              # 순환 사용 시 이전 리프레시 토큰 블랙리스트 등록 여부
     'AUTH_HEADER_TYPES': ('Bearer',),               # 인증 헤더 타입
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=7),  # 액세스 토큰 만료 시간 
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=30),    # 리프레시 토큰 만료 시간 
-    'ROTATE_REFRESH_TOKENS': False,                 # 리프레시 토큰 순환 사용 여부
-    'BLACKLIST_AFTER_ROTATION': False,              # 순환 사용 시 이전 리프레시 토큰 블랙리스트 등록 여부
-    'AUTH_HEADER_TYPES': ('Bearer',),               # 인증 헤더 타입
 }
-
 
 SOCIAL_AUTH_GITHUB_CLIENT_ID = os.environ.get("SOCIAL_AUTH_GITHUB_CLIENT_ID")
 SOCIAL_AUTH_GITHUB_SECRET = os.environ.get("SOCIAL_AUTH_GITHUB_SECRET")
@@ -260,47 +231,5 @@ SOCIALACCOUNT_LOGIN_ON_GET = True
 # ACCOUNT_LOGOUT_REDIRECT_URL = "index"
 ACCOUNT_LOGOUT_ON_GET = True
 
-SESSION_ENGINE = "django.contrib.sessions.backends.db"
-SESSION_COOKIE_SECURE = False  # 개발 환경에서는 False, 프로덕션에서는 True로 설정
-
-
-# SOCIALACCOUNT_PROVIDERS = {
-#     "github": {
-#         "APP": {
-#             "client_id": os.environ.get("SOCIAL_AUTH_GITHUB_CLIENT_ID"),
-#             "secret": os.environ.get("SOCIAL_AUTH_GITHUB_SECRET"),
-#             "key": "",
-#         }
-#     }
-# }
-
-
-SOCIALACCOUNT_LOGIN_ON_GET = True
-# LOGIN_REDIRECT_URL = "main"
-# ACCOUNT_LOGOUT_REDIRECT_URL = "index"
-ACCOUNT_LOGOUT_ON_GET = True
-
-SESSION_ENGINE = "django.contrib.sessions.backends.db"
-SESSION_COOKIE_SECURE = False  # 개발 환경에서는 False, 프로덕션에서는 True로 설정
-
-
-# SOCIALACCOUNT_PROVIDERS = {
-#     "github": {
-#         "APP": {
-#             "client_id": os.environ.get("SOCIAL_AUTH_GITHUB_CLIENT_ID"),
-#             "secret": os.environ.get("SOCIAL_AUTH_GITHUB_SECRET"),
-#             "key": "",
-#         }
-#     }
-# }
-
-
-SOCIALACCOUNT_LOGIN_ON_GET = True
-# LOGIN_REDIRECT_URL = "main"
-# ACCOUNT_LOGOUT_REDIRECT_URL = "index"
-ACCOUNT_LOGOUT_ON_GET = True
-
 # SESSION_ENGINE = "django.contrib.sessions.backends.db"
 # SESSION_COOKIE_SECURE = False  # 개발 환경에서는 False, 프로덕션에서는 True로 설정
-SESSION_ENGINE = "django.contrib.sessions.backends.db"
-SESSION_COOKIE_SECURE = False  # 개발 환경에서는 False, 프로덕션에서는 True로 설정
