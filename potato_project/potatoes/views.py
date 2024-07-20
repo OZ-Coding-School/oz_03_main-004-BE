@@ -18,6 +18,8 @@ class PotatoesList(APIView):
 class MyPotatoDetail(APIView):
     def get(self, request, user_id):
         potato = Potato.objects.filter(user_id=user_id)
+        serializer = PotatoSerializer(potato)
+        return Response(serializer.data)
 
 
 # 유저의 감자 선택 상태 변경
