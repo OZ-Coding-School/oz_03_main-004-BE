@@ -28,6 +28,6 @@ GitHub와 백준 활동으로 성장하는 감자 캐릭터를 키우며 생산�
 This project is licensed under the MIT License
 
 ## 연락처
-- KimDayeon: 
-- NohSungwoo: shtjddn0817@gmail.com
-- JooYoungkwang: dudrknd1642@gmail.com 
+- 김다연: ekdyd516@gmail.com
+- 노성우: shtjddn0817@gmail.com
+- 주영광: dudrknd1642@gmail.com 
