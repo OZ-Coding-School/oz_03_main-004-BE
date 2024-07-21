@@ -180,41 +180,33 @@ EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 REST_USE_JWT = True
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(days=7),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=30),
-    "ROTATE_REFRESH_TOKENS": False,
-    "BLACKLIST_AFTER_ROTATION": True,
-    'AUTH_HEADER_TYPES': ('Bearer',),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=7),  # 액세스 토큰 만료 시간 
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=30),    # 리프레시 토큰 만료 시간 
+    'ROTATE_REFRESH_TOKENS': False,                 # 리프레시 토큰 순환 사용 여부
+    'BLACKLIST_AFTER_ROTATION': False,              # 순환 사용 시 이전 리프레시 토큰 블랙리스트 등록 여부
+    'AUTH_HEADER_TYPES': ('Bearer',),               # 인증 헤더 타입
 }
+
 SOCIAL_AUTH_GITHUB_CLIENT_ID = os.environ.get("SOCIAL_AUTH_GITHUB_CLIENT_ID")
 SOCIAL_AUTH_GITHUB_SECRET = os.environ.get("SOCIAL_AUTH_GITHUB_SECRET")
 STATE = os.environ.get("STATE")
 
-SOCIALACCOUNT_PROVIDERS = {
-    "github": {
-        "APP": {
-            "client_id": os.environ.get("SOCIAL_AUTH_GITHUB_CLIENT_ID"),
-            "secret": os.environ.get("SOCIAL_AUTH_GITHUB_SECRET"),
-            "key": "",
-        }
-    }
-}
+
+# SOCIALACCOUNT_PROVIDERS = {
+#     "github": {
+#         "APP": {
+#             "client_id": os.environ.get("SOCIAL_AUTH_GITHUB_CLIENT_ID"),
+#             "secret": os.environ.get("SOCIAL_AUTH_GITHUB_SECRET"),
+#             "key": "",
+#         }
+#     }
+# }
 
 
 SOCIALACCOUNT_LOGIN_ON_GET = True
-LOGIN_REDIRECT_URL = "main"
-ACCOUNT_LOGOUT_REDIRECT_URL = "index"
+# LOGIN_REDIRECT_URL = "main"
+# ACCOUNT_LOGOUT_REDIRECT_URL = "index"
 ACCOUNT_LOGOUT_ON_GET = True
 
-SESSION_ENGINE = "django.contrib.sessions.backends.db"
-SESSION_COOKIE_SECURE = False  # 개발 환경에서는 False, 프로덕션에서는 True로 설정
-
-SOCIALACCOUNT_PROVIDERS = {
-    'github': {
-        'APP': {
-            'client_id': os.environ.get("SOCIAL_AUTH_GITHUB_CLIENT_ID"),
-            'secret': os.environ.get("SOCIAL_AUTH_GITHUB_SECRET"),
-            'key': '',  
-        }
-    }
-}
+# SESSION_ENGINE = "django.contrib.sessions.backends.db"
+# SESSION_COOKIE_SECURE = False  # 개발 환경에서는 False, 프로덕션에서는 True로 설정
