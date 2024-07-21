@@ -12,6 +12,9 @@ class UserManager(BaseUserManager):
     def create_user(self, username, **extra_fields):
         if not username:
             raise ValueError("The username must be provided")
+    def create_user(self, username, **extra_fields):
+        if not username:
+            raise ValueError("The username must be provided")
 
         user = self.model(username=username, **extra_fields)
         user.save()
@@ -35,12 +38,10 @@ class User(AbstractBaseUser, PermissionsMixin, TimeStampedModel):
     username = models.CharField(max_length=255, null=False, unique=True)
     
     # 프로필 관련 필드
-    name = models.CharField(max_length=20, null=False)
-    nickname = models.CharField(max_length=255, null=False, unique=True)
-    birthday = models.DateField(blank=True, null=True)
+    email = models.CharField(max_length=255, null=True) # 아예 빼는것도 고려
     profile_url = models.CharField(max_length=255, null=True)
     github_id = models.CharField(max_length=255, null=True)
-    baekjoon_id = models.CharField(max_length=255, null=True)
+    baekjoon_id = models.CharField(max_length=255, null=True, default="")
 
     # 감자 관련 필드
     potato_level = models.PositiveIntegerField(null=False, default=0)
@@ -50,8 +51,9 @@ class User(AbstractBaseUser, PermissionsMixin, TimeStampedModel):
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
 
-    USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = ["nickname", "password"]
+    USERNAME_FIELD = "username"
+    REQUIRED_FIELDS = ["profile_url", "github_id"]
+    
     objects = UserManager()  # 유저를 생성 및 관리 (유저를 구분해서 관리하기 위해 - 관리자계정, 일반계정)
 
     def __str__(self):
