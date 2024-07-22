@@ -7,4 +7,6 @@ urlpatterns = [
     path("users/", include("dj_rest_auth.registration.urls")),
     path("users/", include("allauth.urls")),
     path("users/", include("users.urls")),
+    path("potatoes/", include("potatoes.urls")),
+    path("stacks/", include("stacks.urls")),
 ]

@@ -1,9 +1,9 @@
 from rest_framework.serializers import ModelSerializer
 
-from ..stacks.models import Stack
+from user_stacks.models import UserStack
 
 
-class StackSerializer(ModelSerializer):
+class UserStackSerializer(ModelSerializer):
     class Meta:
-        model = Stack
+        model = UserStack
         fields = "__all__"
