@@ -6,6 +6,7 @@ import sys
 def main():
     if os.environ.get("RUN_MAIN") == "1":
         import debugpy
+
         debugpy.listen(("0.0.0.0", 3000))
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "app.settings")
     try:
