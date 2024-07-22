@@ -19,7 +19,7 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DEBUG") == "True"  # 문자열 'True'를 boolean True로 변환
 # 쉼표로 구분된 문자열을 리스트로 변환
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", []).split(",")  
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", []).split(",")
 
 # Application definition
 
@@ -166,7 +166,7 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework.authentication.SessionAuthentication",
         "dj_rest_auth.jwt_auth.JWTCookieAuthentication",
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
 }
 
@@ -208,5 +208,18 @@ SOCIALACCOUNT_LOGIN_ON_GET = True
 # ACCOUNT_LOGOUT_REDIRECT_URL = "index"
 ACCOUNT_LOGOUT_ON_GET = True
 
+
 # SESSION_ENGINE = "django.contrib.sessions.backends.db"
 # SESSION_COOKIE_SECURE = False  # 개발 환경에서는 False, 프로덕션에서는 True로 설정
+
+
+SOCIALACCOUNT_PROVIDERS = {
+    "github": {
+        "APP": {
+            "client_id": os.environ.get("SOCIAL_AUTH_GITHUB_CLIENT_ID"),
+            "secret": os.environ.get("SOCIAL_AUTH_GITHUB_SECRET"),
+            "key": "",
+        }
+    }
+}
+
