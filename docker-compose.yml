@@ -19,6 +19,8 @@ services:
       - DB_NAME=${DB_NAME}
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
+      ###
+      - GITHUB_ACCESS_TOKEN=your_github_access_token
     env_file:
       - .env  
     depends_on:
@@ -35,3 +37,14 @@ services:
      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
    env_file:
       - .env  
+
+
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: pytest
+    volumes:
+      - .:/app
+    depends_on:
+      - db
