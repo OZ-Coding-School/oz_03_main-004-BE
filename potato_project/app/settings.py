@@ -21,10 +21,9 @@ GITHUB_ACCESS_TOKEN = os.environ.get("GITHUB_ACCESS_TOKEN")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DEBUG") == "True"  # 문자열 'True'를 boolean True로 변환
 # 쉼표로 구분된 문자열을 리스트로 변환
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", []).split(",")  
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", []).split(",")
 
 # Application definition
-
 DJANGO_SYSTEM_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -212,7 +211,7 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework.authentication.SessionAuthentication",
         "dj_rest_auth.jwt_auth.JWTCookieAuthentication",
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
 }
 
@@ -224,6 +223,11 @@ ACCOUNT_EMAIL_VERIFICATION = "none"
 
 REST_USE_JWT = True
 SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=7),  # 액세스 토큰 만료 시간 
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=30),    # 리프레시 토큰 만료 시간 
+    'ROTATE_REFRESH_TOKENS': False,                 # 리프레시 토큰 순환 사용 여부
+    'BLACKLIST_AFTER_ROTATION': False,              # 순환 사용 시 이전 리프레시 토큰 블랙리스트 등록 여부
+    'AUTH_HEADER_TYPES': ('Bearer',),               # 인증 헤더 타입
     'ACCESS_TOKEN_LIFETIME': timedelta(days=7),  # 액세스 토큰 만료 시간 
     'REFRESH_TOKEN_LIFETIME': timedelta(days=30),    # 리프레시 토큰 만료 시간 
     'ROTATE_REFRESH_TOKENS': False,                 # 리프레시 토큰 순환 사용 여부
@@ -252,8 +256,10 @@ SOCIALACCOUNT_LOGIN_ON_GET = True
 # ACCOUNT_LOGOUT_REDIRECT_URL = "index"
 ACCOUNT_LOGOUT_ON_GET = True
 
-SESSION_ENGINE = "django.contrib.sessions.backends.db"
-SESSION_COOKIE_SECURE = False  # 개발 환경에서는 False, 프로덕션에서는 True로 설정
+
+# SESSION_ENGINE = "django.contrib.sessions.backends.db"
+# SESSION_COOKIE_SECURE = False  # 개발 환경에서는 False, 프로덕션에서는 True로 설정
+
 
 SOCIALACCOUNT_PROVIDERS = {
     "github": {
@@ -264,13 +270,4 @@ SOCIALACCOUNT_PROVIDERS = {
         }
     }
 }
-#임의에 secret_key 입력해둠
-SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', '@4zo44=ho#(x5kw0l$ycfnbm&1%y%zw&m-oz*4_#6y5b(#)@wg')
 
-SOCIALACCOUNT_LOGIN_ON_GET = True
-LOGIN_REDIRECT_URL = "main"
-ACCOUNT_LOGOUT_REDIRECT_URL = "index"
-ACCOUNT_LOGOUT_ON_GET = True
-
-SESSION_ENGINE = "django.contrib.sessions.backends.db"
-SESSION_COOKIE_SECURE = False  # 개발 환경에서는 False, 프로덕션에서는 True로 설정
