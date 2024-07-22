@@ -4,7 +4,7 @@ from . import views
 
 
 urlpatterns = [
-    path("<int:user_id>/", views.UserStackList, name="user_stack_list"),
-    path("<int:user_id>/create/", views.UserStackCreate, name="user_stack_create"),
-    path("<int:user_id>/patch/", views.UserStackPacth, name="user_stack_patch"),
+    path("<int:user_id>/", views.UserStackList.view_as(), name="user_stack_list"),
+    path("<int:user_id>/create/", views.UserStackCreate.view_as(), name="user_stack_create"),
+    path("<int:user_id>/patch/", views.UserStackPacth.view_as(), name="user_stack_patch"),
 ]
