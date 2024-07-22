@@ -1,6 +1,6 @@
 from rest_framework.serializers import ModelSerializer
 
-from .models import Stack
+from stacks.models import Stack
 
 
 class StackSerializer(ModelSerializer):
