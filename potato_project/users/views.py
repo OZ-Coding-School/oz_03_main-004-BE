@@ -3,24 +3,28 @@ from json.decoder import JSONDecodeError
 
 import requests
 from allauth.socialaccount.models import SocialAccount
-from allauth.socialaccount.providers import github, google
 from allauth.socialaccount.providers.github import views as github_view
-from allauth.socialaccount.providers.google import views as google_view
 from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 from dj_rest_auth.registration.views import SocialLoginView
 from django.conf import settings
 from django.http import JsonResponse
+from rest_framework.response import Response
 from django.shortcuts import redirect
-from dotenv import load_dotenv
 from rest_framework import status
+
+from dj_rest_auth.views import LogoutView
+from rest_framework_simplejwt.tokens import RefreshToken
+
 from users.models import User
 
+# .env 파일에서 환경 변수 로드 (python-dotenv 라이브러리 필요)
+from dotenv import load_dotenv
 load_dotenv()  # .env 파일 로드
 
 
 state = os.environ.get("STATE")
-BASE_URL = "http://localhost:8000/"
-GITHUB_CALLBACK_URI = BASE_URL + "users/github/callback"
+BASE_URL = "http://localhost:8000/" # 프론트엔드 URL로 변경해야 함
+GITHUB_CALLBACK_URI = BASE_URL + "accounts/github/callback/"
 
 
 def github_login(request):
@@ -38,23 +42,26 @@ def github_callback(request):
     client_id = os.environ.get("SOCIAL_AUTH_GITHUB_CLIENT_ID")
     client_secret = os.environ.get("SOCIAL_AUTH_GITHUB_SECRET")
     code = request.GET.get("code")
-    state = request.GET.get("state")
-    error = request.GET.get("error")
 
-    if error:
+
+    # 에러 처리
+    if "error" in request.GET:
         return JsonResponse(
-            {"error": error, "description": request.GET.get("error_description")},
-            status=400,
+            {
+                "error": request.GET.get("error"),
+                "description": request.GET.get("error_description"),
+            },
+            status=status.HTTP_400_BAD_REQUEST,
         )
-
     if not code:
-        return JsonResponse({"error": "No code provided"}, status=400)
+        return JsonResponse({"error": "No code provided"}, status=status.HTTP_400_BAD_REQUEST)
+    
+    print(f"Received code: {code}")
+    print(f"Received state: {state}")
 
-    """
-    Access Token Request
-    """
 
-    token_req = requests.post(
+    # Access Token 요청
+    token_response = requests.post(
         "https://github.com/login/oauth/access_token",
         data={
             "client_id": client_id,
@@ -64,72 +71,98 @@ def github_callback(request):
         },
         headers={"Accept": "application/json"},
     )
-
-    token_req_json = token_req.json()
-    print(f"Token request response: {token_req_json}")
-
-    error = token_req_json.get("error")
-    if error:
+    token_json = token_response.json()
+    access_token = token_json.get("access_token")
+    
+    # 에러 처리
+    if not token_response.ok:
         return JsonResponse(
-            {"error": error, "description": token_req_json.get("error_description")},
-            status=400,
+            {"error": "Failed to get access token"},
+            status=status.HTTP_400_BAD_REQUEST,
         )
+        
+    print(f"Token response: {token_response.json()}")
 
-    access_token = token_req_json.get("access_token")
-
-    """
-    Email Request
-    """
-    user_req = requests.get(
-        f"https://api.github.com/user",
+    # 사용자 정보 요청
+    user_response = requests.get(
+        "https://api.github.com/user",
         headers={"Authorization": f"Bearer {access_token}"},
     )
-    user_json = user_req.json()
-    error = user_json.get("error")
-    if error is not None:
-        raise ValueError(f"GitHub API error: {error}")
-    # print(user_json)
-    email = user_json.get("email")
+    user_json = user_response.json()
 
-    # 응답받은 Access Token을 로그인된 사용자의 Email을 응답받기 위해 url parameter에 포함하여 요청 - Access Token이 틀렸거나, 에러 발생으로 200 OK 코드를 응답받지 못하면 400으로 Response
+    # 에러 처리
+    if not user_response.ok:
+        return JsonResponse({"error": "Failed to get user info"}, status=status.HTTP_401_UNAUTHORIZED)
+    
+    print(f"User response: {user_response.json()}")
+    
+    username = user_json.get("login")
+    if not username:
+        # 깃허브 계정에 username 없는 경우
+        return JsonResponse({"err_msg": "failed to signup"}, status=400)
 
-    """
-    Signup or Signin Request
-    """
+
+    # 사용자 생성/업데이트 및 로그인
     try:
-        user = User.objects.get(email=email)
-        # 기존에 github로 가입된 유저
-        data = {"access_token": access_token, "code": code}
-        accept = requests.post(f"{BASE_URL}accounts/github/login/finish/", data=data)
-        accept_status = accept.status_code
-        if accept_status != 200:
-            return JsonResponse({"err_msg": "failed to signin"}, status=accept_status)
-        accept_json = accept.json()
-        accept_json.pop("user", None)
-        return JsonResponse(accept_json)
+        user = User.objects.get(username=username)
     except User.DoesNotExist:
-        # 기존에 가입된 유저가 없으면 새로 가입
-        data = {"access_token": access_token, "code": code}
-        accept = requests.post(f"{BASE_URL}accounts/github/login/finish/", data=data)
-        accept_status = accept.status_code
-        if accept_status != 200:
-            return JsonResponse({"err_msg": "failed to signup"}, status=accept_status)
-        # user의 pk, email, first name, last name과 Access Token, Refresh token 가져옴
-        accept_json = accept.json()
-        accept_json.pop("user", None)
-        return JsonResponse(accept_json)
+        user = User.objects.create_user(
+            username=username,
+            email=user_json.get("email"),
+            profile_url=user_json.get("avatar_url"),
+            github_id=user_json.get("login"),
+        )
+            
+    user.profile_url = user_json.get("avatar_url", user.profile_url)  # 프로필 이미지 업데이트
+    user.save()
 
+    social_account, _ = SocialAccount.objects.get_or_create(
+        user=user,
+        provider='github',
+        uid=str(user_json.get("id")),
+        extra_data=user_json,
+    )
+
+    # 로그인 처리 및 응답
+    data = {"access_token": access_token, "code": code}
+    login_response = requests.post(
+        f"{BASE_URL}accounts/github/login/finish/", data=data
+    )
+    
+    # 에러 처리 (Bad Request)
+    if not login_response.ok:
+        return JsonResponse(
+            {"err_msg": "failed to login"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    login_data = login_response.json()
+    login_data.pop("user",None) # user 정보 제외
+
+    return JsonResponse(login_data)
 
 class GithubLogin(SocialLoginView):
     adapter_class = github_view.GitHubOAuth2Adapter
     callback_url = GITHUB_CALLBACK_URI
     client_class = OAuth2Client
+    
+class CustomLogoutView(LogoutView):
+    def logout(self, request):
+        try:
+            refresh_token = request.COOKIES.get('refresh_token')
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+        except Exception as e:
+            print(e)
+        response = super().logout(request)
+        response.delete_cookie('access_token')
+        response.delete_cookie('refresh_token')
+        return response
 
 
 """
-1. 전달받은 email과 동일한 Email이 있는지 찾아본다.
+1. 전달받은 username과 동일한 username이 있는지 찾아본다.
 2-1. 만약 있다면?
-       - FK로 연결되어있는 socialaccount 테이블에서 이메일의 유저가 있는지 체크
        - 있으면 로그인 진행, 해당 유저의 JWT 발급, 그러나 도중에          
          예기치 못한 오류가 발생하면 에러 메세지와 함께 오류 Status 응답
 2-2. 없다면 (신규 유저이면)
