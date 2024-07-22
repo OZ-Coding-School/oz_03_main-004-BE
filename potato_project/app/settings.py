@@ -161,12 +161,12 @@ STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 REST_FRAMEWORK = {
-    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
-    "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework.authentication.SessionAuthentication",
-        "dj_rest_auth.jwt_auth.JWTCookieAuthentication",
-        "rest_framework_simplejwt.authentication.JWTAuthentication",
-    ),
+    # "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
+    # "DEFAULT_AUTHENTICATION_CLASSES": (
+    #     "rest_framework.authentication.SessionAuthentication",
+    #     "dj_rest_auth.jwt_auth.JWTCookieAuthentication",
+    #     "rest_framework_simplejwt.authentication.JWTAuthentication",
+    # ),
 }
 
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
@@ -191,27 +191,6 @@ SOCIAL_AUTH_GITHUB_SECRET = os.environ.get("SOCIAL_AUTH_GITHUB_SECRET")
 STATE = os.environ.get("STATE")
 
 
-# SOCIALACCOUNT_PROVIDERS = {
-#     "github": {
-#         "APP": {
-#             "client_id": os.environ.get("SOCIAL_AUTH_GITHUB_CLIENT_ID"),
-#             "secret": os.environ.get("SOCIAL_AUTH_GITHUB_SECRET"),
-#             "key": "",
-#         }
-#     }
-# }
-
-
-SOCIALACCOUNT_LOGIN_ON_GET = True
-# LOGIN_REDIRECT_URL = "main"
-# ACCOUNT_LOGOUT_REDIRECT_URL = "index"
-ACCOUNT_LOGOUT_ON_GET = True
-
-
-# SESSION_ENGINE = "django.contrib.sessions.backends.db"
-# SESSION_COOKIE_SECURE = False  # 개발 환경에서는 False, 프로덕션에서는 True로 설정
-
-
 SOCIALACCOUNT_PROVIDERS = {
     "github": {
         "APP": {
@@ -222,3 +201,12 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
+
+SOCIALACCOUNT_LOGIN_ON_GET = True
+# LOGIN_REDIRECT_URL = "main"
+# ACCOUNT_LOGOUT_REDIRECT_URL = "index"
+ACCOUNT_LOGOUT_ON_GET = True
+
+
+# SESSION_ENGINE = "django.contrib.sessions.backends.db"
+# SESSION_COOKIE_SECURE = False  # 개발 환경에서는 False, 프로덕션에서는 True로 설정
