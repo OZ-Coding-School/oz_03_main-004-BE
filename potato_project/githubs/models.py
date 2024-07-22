@@ -8,9 +8,8 @@ class UserProfile(models.Model):
     github_access_token = models.CharField(max_length=255)
 
     def __str__(self):
-        # GitHub의 nickname을 반환, 우선 nickname으로 해둠
-        return self.user.nickname  
-
+        # GitHub의 nickname을 반환
+        return self.user.username
 class Github(TimeStampedModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='github_repositories')
     github_id = models.CharField(max_length=50, unique=True, verbose_name="GitHub ID")
