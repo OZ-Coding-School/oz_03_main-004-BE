@@ -4,6 +4,8 @@ from django.http import JsonResponse
 from django.shortcuts import render
 
 # solved.ac에서 api를 받아오는 함수, 더 필요할 시 추가 할 예정
+
+
 def get_boj_profile(userid):
     url = f"https://solved.ac/api/v3/user/show?handle={userid}"
     response = requests.get(url)
