@@ -9,4 +9,5 @@ urlpatterns = [
     path("users/", include("users.urls")),
     path("potatoes/", include("potatoes.urls")),
     path("stacks/", include("stacks.urls")),
+    path("stacks/", include("user_stacks.urls")),
 ]
