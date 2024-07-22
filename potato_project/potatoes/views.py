@@ -18,7 +18,7 @@ class PotatoesList(APIView):
 class MyPotatoDetail(APIView):
     def get(self, request, user_id):
         potato = Potato.objects.filter(user_id=user_id)
-        serializer = PotatoSerializer(potato)
+        serializer = PotatoSerializer(potato, many=True)
         return Response(serializer.data)
 
 
