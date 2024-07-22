@@ -1,10 +1,10 @@
+from common.models import TimeStampedModel
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
     PermissionsMixin,
 )
 from django.db import models
-from common.models import TimeStampedModel
 
 
 class UserManager(BaseUserManager):
@@ -39,6 +39,7 @@ class User(AbstractBaseUser, PermissionsMixin, TimeStampedModel):
     github_id = models.CharField(max_length=255, null=True)
     baekjoon_id = models.CharField(max_length=255, null=True, default="")
 
+
     # 감자 관련 필드
     potato_level = models.PositiveIntegerField(null=False, default=0)
     potato_exp = models.PositiveIntegerField(null=False, default=0)
@@ -47,6 +48,7 @@ class User(AbstractBaseUser, PermissionsMixin, TimeStampedModel):
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
 
+    
     USERNAME_FIELD = "username"
     REQUIRED_FIELDS = ["profile_url", "github_id"]
     

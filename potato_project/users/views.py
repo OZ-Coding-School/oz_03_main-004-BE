@@ -43,6 +43,7 @@ def github_callback(request):
     client_secret = os.environ.get("SOCIAL_AUTH_GITHUB_SECRET")
     code = request.GET.get("code")
 
+
     # 에러 처리
     if "error" in request.GET:
         return JsonResponse(
