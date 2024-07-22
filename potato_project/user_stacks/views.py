@@ -30,19 +30,24 @@ class UserStackCreate(APIView):
 class UserStackPacth(APIView):
     def patch(self, request, user_id):
         stacks = UserStack.objects.filter(user_id=user_id, data=request.data)
-        
+
         if not stacks.exists():
-            return Response({"error": "No stacks found for this user"}, status=status.HTTP_404_NOT_FOUND)
-    
+            return Response(
+                {"error": "No stacks found for this user"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
         for stack in stacks:
             serializer = UserStackSerializer(stack, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-            
-        return Response({"message": "Stacks updated successfully."}, status=status.HTTP_200_OK)
-    
+
+        return Response(
+            {"message": "Stacks updated successfully."}, status=status.HTTP_200_OK
+        )
+
 
 # class UserStackDelete(APIView):
 #     def delete(self, request, user_id):
@@ -50,6 +55,6 @@ class UserStackPacth(APIView):
 
 #         if not stacks.exists():
 #             return Response({"error": "No stacks found for this user"}, status=status.HTTP_404_NOT_FOUND)
-        
+
 #         stacks.delete()
 #         return Response({"message": "Stacks deleted successflully"}, status=status.HTTP_200_OK)

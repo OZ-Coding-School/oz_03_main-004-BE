@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("users", "0005_remove_user_birthday_remove_user_name_and_more"),
     ]
