@@ -22,7 +22,6 @@ DEBUG = os.environ.get("DEBUG") == "True"  # 문자열 'True'를 boolean True로
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", []).split(",")
 
 # Application definition
-
 DJANGO_SYSTEM_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
