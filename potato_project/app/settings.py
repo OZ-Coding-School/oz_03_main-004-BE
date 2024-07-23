@@ -64,17 +64,20 @@ CUSTOM_USER_APPS = [
 INSTALLED_APPS = DJANGO_SYSTEM_APPS + CUSTOM_USER_APPS
 #####
 ## 비밀 키 파일 경로
-KEY_FILE_PATH = os.path.join(BASE_DIR, 'fernet.key')
+KEY_FILE_PATH = os.path.join(BASE_DIR, 'key_file.txt')
+
 
 # 비밀 키가 없으면 생성 (생성된 키는 서버에서 보관하고, 실제 서비스에서는 이 부분을 주석 처리합니다)
 if not os.path.exists(KEY_FILE_PATH):
     raise RuntimeError("key file이 없습니다. Please generate it using generate_key.py.")
 
+
 # 파일에서 비밀 키 읽기
 def load_key():
-    #파일을 바이너리 읽기모드로 연다는 rb
-    with open(KEY_FILE_PATH, 'rb') as key_file:
+    # 파일을 바이너리 읽기모드로 연다는 rb
+    with open(KEY_FILE_PATH, "rb") as key_file:
         return key_file.read()
+
 
 # 비밀 키 설정
 FERNET_KEY = load_key()
@@ -85,14 +88,14 @@ FERNET_KEY = load_key()
 
 # 비밀 키가 없으면 생성 (생성된 키는 서버에서 보관하고, 실제 서비스에서는 이 부분을 주석 처리합니다)
 if not os.path.exists(KEY_FILE_PATH):
-    raise RuntimeError("key file이 없습니다. Please generate it using generate_key.py.")
+    raise RuntimeError("key file이 없습니다. ")
+
 
 # 파일에서 비밀 키 읽기
 def load_key():
-    #파일을 바이너리 읽기모드로 연다는 rb
-    with open(KEY_FILE_PATH, 'rb') as key_file:
+    # 파일을 바이너리 읽기모드로 연다는 rb
+    with open(KEY_FILE_PATH, "rb") as key_file:
         return key_file.read()
-
 
 
 # custom user model
@@ -210,16 +213,16 @@ ACCOUNT_EMAIL_VERIFICATION = "none"
 
 REST_USE_JWT = True
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=7),  # 액세스 토큰 만료 시간 
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=30),    # 리프레시 토큰 만료 시간 
-    'ROTATE_REFRESH_TOKENS': False,                 # 리프레시 토큰 순환 사용 여부
-    'BLACKLIST_AFTER_ROTATION': False,              # 순환 사용 시 이전 리프레시 토큰 블랙리스트 등록 여부
-    'AUTH_HEADER_TYPES': ('Bearer',),               # 인증 헤더 타입
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=7),  # 액세스 토큰 만료 시간 
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=30),    # 리프레시 토큰 만료 시간 
-    'ROTATE_REFRESH_TOKENS': False,                 # 리프레시 토큰 순환 사용 여부
-    'BLACKLIST_AFTER_ROTATION': False,              # 순환 사용 시 이전 리프레시 토큰 블랙리스트 등록 여부
-    'AUTH_HEADER_TYPES': ('Bearer',),               # 인증 헤더 타입
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=7),  # 액세스 토큰 만료 시간
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=30),  # 리프레시 토큰 만료 시간
+    "ROTATE_REFRESH_TOKENS": False,  # 리프레시 토큰 순환 사용 여부
+    "BLACKLIST_AFTER_ROTATION": False,  # 순환 사용 시 이전 리프레시 토큰 블랙리스트 등록 여부
+    "AUTH_HEADER_TYPES": ("Bearer",),  # 인증 헤더 타입
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=7),  # 액세스 토큰 만료 시간
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=30),  # 리프레시 토큰 만료 시간
+    "ROTATE_REFRESH_TOKENS": False,  # 리프레시 토큰 순환 사용 여부
+    "BLACKLIST_AFTER_ROTATION": False,  # 순환 사용 시 이전 리프레시 토큰 블랙리스트 등록 여부
+    "AUTH_HEADER_TYPES": ("Bearer",),  # 인증 헤더 타입
 }
 
 SOCIAL_AUTH_GITHUB_CLIENT_ID = os.environ.get("SOCIAL_AUTH_GITHUB_CLIENT_ID")
@@ -245,4 +248,3 @@ SOCIALACCOUNT_PROVIDERS = {
         }
     }
 }
-
