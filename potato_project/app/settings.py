@@ -84,6 +84,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "allauth.account.middleware.AccountMiddleware",
+    
 ]
 
 # URL 설정
@@ -157,6 +158,22 @@ ACCOUNT_AUTHENTICATION_METHOD = "username"
 ACCOUNT_EMAIL_VERIFICATION = "none"
 ACCOUNT_LOGOUT_ON_GET = True
 
+# 이메일 백엔드 설정
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+REST_USE_JWT = True
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=7),  # 액세스 토큰 만료 시간 
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=30),    # 리프레시 토큰 만료 시간 
+    'ROTATE_REFRESH_TOKENS': False,                 # 리프레시 토큰 순환 사용 여부
+    'BLACKLIST_AFTER_ROTATION': False,              # 순환 사용 시 이전 리프레시 토큰 블랙리스트 등록 여부
+    'AUTH_HEADER_TYPES': ('Bearer',),               # 인증 헤더 타입
+}
+
+SOCIAL_AUTH_GITHUB_CLIENT_ID = os.environ.get("SOCIAL_AUTH_GITHUB_CLIENT_ID")
+SOCIAL_AUTH_GITHUB_SECRET = os.environ.get("SOCIAL_AUTH_GITHUB_SECRET")
+STATE = os.environ.get("STATE")
+
 # Social Account Providers 설정
 SOCIALACCOUNT_PROVIDERS = {
     "github": {
@@ -168,6 +185,16 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
+SOCIALACCOUNT_LOGIN_ON_GET = True
+
+# LOGIN_REDIRECT_URL = "main"
+# ACCOUNT_LOGOUT_REDIRECT_URL = "index"
+ACCOUNT_LOGOUT_ON_GET = True
+
+
+# SESSION_ENGINE = "django.contrib.sessions.backends.db"
+# SESSION_COOKIE_SECURE = False  # 개발 환경에서는 False, 프로덕션에서는 True로 설정
+
 # JWT 및 기타 설정
 REST_USE_JWT = True
 SIMPLE_JWT = {
@@ -178,5 +205,13 @@ SIMPLE_JWT = {
     "AUTH_HEADER_TYPES": ("Bearer",),
 }
 
-# 이메일 백엔드 설정
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+SOCIALACCOUNT_LOGIN_ON_GET = True
+# LOGIN_REDIRECT_URL = "main"
+# ACCOUNT_LOGOUT_REDIRECT_URL = "index"
+ACCOUNT_LOGOUT_ON_GET = True
+
+
+# SESSION_ENGINE = "django.contrib.sessions.backends.db"
+# SESSION_COOKIE_SECURE = False  # 개발 환경에서는 False, 프로덕션에서는 True로 설정
+
