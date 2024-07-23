@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("users", "0004_remove_user_exp_remove_user_level_user_created_at_and_more"),
     ]
