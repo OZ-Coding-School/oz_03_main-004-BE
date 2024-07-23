@@ -163,11 +163,11 @@ EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 REST_USE_JWT = True
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=7),  # 액세스 토큰 만료 시간 
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=30),    # 리프레시 토큰 만료 시간 
-    'ROTATE_REFRESH_TOKENS': False,                 # 리프레시 토큰 순환 사용 여부
-    'BLACKLIST_AFTER_ROTATION': False,              # 순환 사용 시 이전 리프레시 토큰 블랙리스트 등록 여부
-    'AUTH_HEADER_TYPES': ('Bearer',),               # 인증 헤더 타입
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=7),  # 액세스 토큰 만료 시간
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=30),  # 리프레시 토큰 만료 시간
+    "ROTATE_REFRESH_TOKENS": False,  # 리프레시 토큰 순환 사용 여부
+    "BLACKLIST_AFTER_ROTATION": False,  # 순환 사용 시 이전 리프레시 토큰 블랙리스트 등록 여부
+    "AUTH_HEADER_TYPES": ("Bearer",),  # 인증 헤더 타입
 }
 
 SOCIAL_AUTH_GITHUB_CLIENT_ID = os.environ.get("SOCIAL_AUTH_GITHUB_CLIENT_ID")

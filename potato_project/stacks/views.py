@@ -12,6 +12,7 @@ class UserStackList(APIView):
         stacks = Stack.objects.filter(user_id=user_id)
         serializer = StackSerializer(stacks, many=True)
         return Response(serializer.data)
+<<<<<<< HEAD
 
 
 # 유저 스택 리스트 저장
@@ -24,3 +25,5 @@ class UserStackCreate(APIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+=======
+>>>>>>> develop
