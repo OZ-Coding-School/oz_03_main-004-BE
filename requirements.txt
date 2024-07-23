@@ -14,5 +14,7 @@ requests
 requests-oauthlib
 cryptography
 
-
+pytest
+pytest-django
+PyGithub>=1.55
 

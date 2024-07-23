@@ -1,28 +1,31 @@
 import os
 from datetime import timedelta
 from pathlib import Path
-
 from dotenv import load_dotenv
+from cryptography.fernet import Fernet
 
-load_dotenv()  # .env 파일 로드
+# .env 파일 로드
+load_dotenv()
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+# 기본 경로 설정
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# 비밀 키 파일 경로 및 설정
+KEY_FILE_PATH = os.path.join(BASE_DIR, 'key_file.txt')
+if os.path.exists(KEY_FILE_PATH):
+    def load_key():
+        with open(KEY_FILE_PATH, "rb") as key_file:
+            return key_file.read()
+    FERNET_KEY = load_key()
+else:
+    raise RuntimeError("key file이 없습니다.")
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
+# Django 비밀 키 및 디버그 설정
 SECRET_KEY = os.environ.get("SECRET_KEY")
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get("DEBUG") == "True"  # 문자열 'True'를 boolean True로 변환
-# 쉼표로 구분된 문자열을 리스트로 변환
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", []).split(",")
+DEBUG = os.environ.get("DEBUG") == "True"
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split(",")
 
 # Application definition
-
 DJANGO_SYSTEM_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -63,16 +66,19 @@ CUSTOM_USER_APPS = [
 
 INSTALLED_APPS = DJANGO_SYSTEM_APPS + CUSTOM_USER_APPS
 
-# custom user model
+# Custom user model
 AUTH_USER_MODEL = "users.User"
 
+# 사이트 ID
 SITE_ID = 1
 
+# 인증 백엔드 설정
 AUTHENTICATION_BACKENDS = (
     "django.contrib.auth.backends.ModelBackend",
     "allauth.account.auth_backends.AuthenticationBackend",
 )
 
+# 미들웨어 설정
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -82,11 +88,13 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "allauth.account.middleware.AccountMiddleware",
-    "django.contrib.sessions.middleware.SessionMiddleware",
+    
 ]
 
+# URL 설정
 ROOT_URLCONF = "app.urls"
 
+# 템플릿 설정
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -103,12 +111,10 @@ TEMPLATES = [
     },
 ]
 
+# WSGI 애플리케이션 설정
 WSGI_APPLICATION = "app.wsgi.application"
 
-
-# Database
-# https://docs.djangoproject.com/en/5.0/ref/settings/#databases
-
+# 데이터베이스 설정
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
@@ -119,48 +125,27 @@ DATABASES = {
     }
 }
 
-
-# Password validation
-# https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
-
+# 비밀번호 검증 설정
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
-    },
+    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
+    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
+    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
+    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
-
-# Internationalization
-# https://docs.djangoproject.com/en/5.0/topics/i18n/
-
+# 국제화 설정
 LANGUAGE_CODE = "en-us"
-
 TIME_ZONE = "UTC"
-
 USE_I18N = True
-
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.0/howto/static-files/
-
+# 정적 파일 설정
 STATIC_URL = "static/"
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
-
+# 기본 Auto Field
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+# REST Framework 설정
 REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
     "DEFAULT_AUTHENTICATION_CLASSES": (
@@ -169,7 +154,7 @@ REST_FRAMEWORK = {
     ),
 }
 
-
+# JWT 및 기타 설정
 REST_USE_JWT = True
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(days=7),  # 액세스 토큰 만료 시간
@@ -190,6 +175,7 @@ SOCIAL_AUTH_GITHUB_SECRET = os.environ.get("SOCIAL_AUTH_GITHUB_SECRET")
 STATE = os.environ.get("STATE")
 
 
+
 # SOCIALACCOUNT_PROVIDERS = {
 #     "github": {
 #         "APP": {
@@ -208,9 +194,8 @@ SOCIALACCOUNT_PROVIDERS = {
             "read:org",
         ],
     }
-}
-
 
 SOCIALACCOUNT_LOGIN_ON_GET = True
 # LOGIN_REDIRECT_URL = "main"
 # ACCOUNT_LOGOUT_REDIRECT_URL = "index"
+
