@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name="Baekjoon",
+            name="Github",
             fields=[
                 (
                     "id",
@@ -34,18 +34,48 @@ class Migration(migrations.Migration):
                     "updated_at",
                     models.DateTimeField(auto_now=True, verbose_name="수정일자"),
                 ),
-                ("score", models.BigIntegerField(verbose_name="백준 점수")),
+                (
+                    "github_id",
+                    models.CharField(
+                        max_length=50, unique=True, verbose_name="GitHub ID"
+                    ),
+                ),
+                ("commit_num", models.BigIntegerField(verbose_name="Commit Number")),
                 (
                     "user",
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
+                        related_name="github_repositories",
                         to=settings.AUTH_USER_MODEL,
-                        verbose_name="유저아이디",
                     ),
                 ),
             ],
             options={
                 "abstract": False,
             },
+        ),
+        migrations.CreateModel(
+            name="UserProfile",
+            fields=[
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("github_access_token", models.CharField(max_length=255)),
+                (
+                    "user",
+                    models.OneToOneField(
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="profile",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+            ],
         ),
     ]

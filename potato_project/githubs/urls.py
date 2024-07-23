@@ -4,7 +4,7 @@ from .views import GetCommitDataView
 
 urlpatterns = [
     path(
-        "githubs/<int:userid>/commits/",
+        "<str:userid>/commits/",  # githubs/를 제외
         GetCommitDataView.as_view(),
         name="get_commit_data",
     ),
