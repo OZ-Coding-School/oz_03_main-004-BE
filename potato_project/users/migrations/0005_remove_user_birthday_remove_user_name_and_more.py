@@ -28,3 +28,4 @@ class Migration(migrations.Migration):
             field=models.CharField(max_length=128, verbose_name="password"),
         ),
     ]
+
