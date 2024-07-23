@@ -9,5 +9,4 @@ urlpatterns = [
         views.GithubLogin.as_view(),
         name="github_login_todjango",
     ),
-    path("logout/", views.CustomLogoutView.as_view(), name="rest_logout"),
 ]
