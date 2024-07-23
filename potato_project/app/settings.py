@@ -4,7 +4,6 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 from cryptography.fernet import Fernet
-from cryptography.fernet import Fernet
 
 load_dotenv()  # .env 파일 로드
 
@@ -83,8 +82,6 @@ FERNET_KEY = load_key()
 
 
 #####
-## 비밀 키 파일 경로
-KEY_FILE_PATH = os.path.join(BASE_DIR, 'fernet.key')
 
 # 비밀 키가 없으면 생성 (생성된 키는 서버에서 보관하고, 실제 서비스에서는 이 부분을 주석 처리합니다)
 if not os.path.exists(KEY_FILE_PATH):
@@ -95,10 +92,6 @@ def load_key():
     #파일을 바이너리 읽기모드로 연다는 rb
     with open(KEY_FILE_PATH, 'rb') as key_file:
         return key_file.read()
-
-# 비밀 키 설정
-FERNET_KEY = load_key()
-######
 
 
 
@@ -111,12 +104,6 @@ AUTHENTICATION_BACKENDS = (
     "django.contrib.auth.backends.ModelBackend",
     "allauth.account.auth_backends.AuthenticationBackend",
 )
-
-#깃허브 파이프라인 함수 추가
-
-
-#깃허브 파이프라인 함수 추가
-
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -238,18 +225,6 @@ SIMPLE_JWT = {
 SOCIAL_AUTH_GITHUB_CLIENT_ID = os.environ.get("SOCIAL_AUTH_GITHUB_CLIENT_ID")
 SOCIAL_AUTH_GITHUB_SECRET = os.environ.get("SOCIAL_AUTH_GITHUB_SECRET")
 STATE = os.environ.get("STATE")
-
-
-# SOCIALACCOUNT_PROVIDERS = {
-#     "github": {
-#         "APP": {
-#             "client_id": os.environ.get("SOCIAL_AUTH_GITHUB_CLIENT_ID"),
-#             "secret": os.environ.get("SOCIAL_AUTH_GITHUB_SECRET"),
-#             "key": "",
-#         }
-#     }
-# }
-
 
 SOCIALACCOUNT_LOGIN_ON_GET = True
 # LOGIN_REDIRECT_URL = "main"
