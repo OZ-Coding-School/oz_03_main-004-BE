@@ -164,27 +164,25 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
     "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework.authentication.SessionAuthentication",
         "dj_rest_auth.jwt_auth.JWTCookieAuthentication",
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
 }
 
-ACCOUNT_USER_MODEL_USERNAME_FIELD = None
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_UNIQUE_EMAIL = True
-ACCOUNT_USERNAME_REQUIRED = False
-ACCOUNT_AUTHENTICATION_METHOD = "email"
-ACCOUNT_EMAIL_VERIFICATION = "none"
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 REST_USE_JWT = True
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=7),  # 액세스 토큰 만료 시간 
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=30),    # 리프레시 토큰 만료 시간 
-    'ROTATE_REFRESH_TOKENS': False,                 # 리프레시 토큰 순환 사용 여부
-    'BLACKLIST_AFTER_ROTATION': False,              # 순환 사용 시 이전 리프레시 토큰 블랙리스트 등록 여부
-    'AUTH_HEADER_TYPES': ('Bearer',),               # 인증 헤더 타입
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=7),  # 액세스 토큰 만료 시간
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=30),  # 리프레시 토큰 만료 시간
+    "ROTATE_REFRESH_TOKENS": False,  # 리프레시 토큰 순환 사용 여부
+    "BLACKLIST_AFTER_ROTATION": False,  # 순환 사용 시 이전 리프레시 토큰 블랙리스트 등록 여부
+    "AUTH_HEADER_TYPES": ("Bearer",),  # 인증 헤더 타입
+}
+
+REST_AUTH = {
+    "USE_JWT": True,
+    "JWT_AUTH_COOKIE": "my-app-auth",
+    "JWT_AUTH_REFRESH_COOKIE": "my-refresh-token",
 }
 
 SOCIAL_AUTH_GITHUB_CLIENT_ID = os.environ.get("SOCIAL_AUTH_GITHUB_CLIENT_ID")
@@ -202,24 +200,17 @@ STATE = os.environ.get("STATE")
 #     }
 # }
 
+SOCIALACCOUNT_PROVIDERS = {
+    "github": {
+        "SCOPE": [
+            "user",
+            "repo",
+            "read:org",
+        ],
+    }
+}
+
 
 SOCIALACCOUNT_LOGIN_ON_GET = True
 # LOGIN_REDIRECT_URL = "main"
 # ACCOUNT_LOGOUT_REDIRECT_URL = "index"
-ACCOUNT_LOGOUT_ON_GET = True
-
-
-# SESSION_ENGINE = "django.contrib.sessions.backends.db"
-# SESSION_COOKIE_SECURE = False  # 개발 환경에서는 False, 프로덕션에서는 True로 설정
-
-
-SOCIALACCOUNT_PROVIDERS = {
-    "github": {
-        "APP": {
-            "client_id": os.environ.get("SOCIAL_AUTH_GITHUB_CLIENT_ID"),
-            "secret": os.environ.get("SOCIAL_AUTH_GITHUB_SECRET"),
-            "key": "",
-        }
-    }
-}
-
