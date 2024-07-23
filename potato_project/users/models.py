@@ -52,14 +52,7 @@ class User(AbstractBaseUser, PermissionsMixin, TimeStampedModel):
     is_staff = models.BooleanField(default=False)
 
     USERNAME_FIELD = "username"
-    REQUIRED_FIELDS = ["profile_url", "github_id"]
-
-    objects = (
-        UserManager()
-    )  # 유저를 생성 및 관리 (유저를 구분해서 관리하기 위해 - 관리자계정, 일반계정)
-
-    USERNAME_FIELD = "username"
-    REQUIRED_FIELDS = ["profile_url", "github_id"]
+    REQUIRED_FIELDS = []
 
     objects = (
         UserManager()

@@ -13,4 +13,6 @@ urlpatterns = [
     path("stacks/", include("stacks.urls")),
     path("stacks/", include("user_stacks.urls")),
     path("todos/", include("todos.urls")),
+    path("githubs/", include("githubs.urls")), 
 ]
+
