@@ -13,7 +13,6 @@ ENV PYTHONUNBUFFERED 1
 COPY ./requirements.txt /tmp/requirements.txt
 COPY ./requirements.dev.txt /tmp/requirements.dev.txt
 COPY ./potato_project /app
-
 WORKDIR /app
 EXPOSE 8000
 
@@ -38,3 +37,6 @@ RUN python -m venv /py && \
 ENV PATH="/py/bin:$PATH"
 
 USER django-user
+
+# 이 명령어를 추가하여 pytest를 설치합니다.
+RUN /py/bin/pip install pytest pytest-django
