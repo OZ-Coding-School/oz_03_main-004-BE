@@ -6,24 +6,22 @@ from allauth.socialaccount.models import SocialAccount
 from allauth.socialaccount.providers.github import views as github_view
 from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 from dj_rest_auth.registration.views import SocialLoginView
+from dj_rest_auth.views import LogoutView
 from django.conf import settings
 from django.http import JsonResponse
-from rest_framework.response import Response
 from django.shortcuts import redirect
-from rest_framework import status
-
-from dj_rest_auth.views import LogoutView
-from rest_framework_simplejwt.tokens import RefreshToken
-
-from users.models import User
-
 # .env 파일에서 환경 변수 로드 (python-dotenv 라이브러리 필요)
 from dotenv import load_dotenv
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import RefreshToken
+from users.models import User
+
 load_dotenv()  # .env 파일 로드
 
 
 state = os.environ.get("STATE")
-BASE_URL = "http://localhost:8000/" # 프론트엔드 URL로 변경해야 함
+BASE_URL = "http://localhost:8000/"  # 프론트엔드 URL로 변경해야 함
 GITHUB_CALLBACK_URI = BASE_URL + "accounts/github/callback/"
 
 
@@ -43,7 +41,6 @@ def github_callback(request):
     client_secret = os.environ.get("SOCIAL_AUTH_GITHUB_SECRET")
     code = request.GET.get("code")
 
-
     # 에러 처리
     if "error" in request.GET:
         return JsonResponse(
@@ -54,11 +51,12 @@ def github_callback(request):
             status=status.HTTP_400_BAD_REQUEST,
         )
     if not code:
-        return JsonResponse({"error": "No code provided"}, status=status.HTTP_400_BAD_REQUEST)
-    
+        return JsonResponse(
+            {"error": "No code provided"}, status=status.HTTP_400_BAD_REQUEST
+        )
+
     print(f"Received code: {code}")
     print(f"Received state: {state}")
-
 
     # Access Token 요청
     token_response = requests.post(
@@ -73,14 +71,14 @@ def github_callback(request):
     )
     token_json = token_response.json()
     access_token = token_json.get("access_token")
-    
+
     # 에러 처리
     if not token_response.ok:
         return JsonResponse(
             {"error": "Failed to get access token"},
             status=status.HTTP_400_BAD_REQUEST,
         )
-        
+
     print(f"Token response: {token_response.json()}")
 
     # 사용자 정보 요청
@@ -92,15 +90,16 @@ def github_callback(request):
 
     # 에러 처리
     if not user_response.ok:
-        return JsonResponse({"error": "Failed to get user info"}, status=status.HTTP_401_UNAUTHORIZED)
-    
+        return JsonResponse(
+            {"error": "Failed to get user info"}, status=status.HTTP_401_UNAUTHORIZED
+        )
+
     print(f"User response: {user_response.json()}")
-    
+
     username = user_json.get("login")
     if not username:
         # 깃허브 계정에 username 없는 경우
         return JsonResponse({"err_msg": "failed to signup"}, status=400)
-
 
     # 사용자 생성/업데이트 및 로그인
     try:
@@ -112,13 +111,13 @@ def github_callback(request):
             profile_url=user_json.get("avatar_url"),
             github_id=user_json.get("login"),
         )
-            
+
     user.profile_url = user_json.get("avatar_url", user.profile_url)  # 프로필 이미지 업데이트
     user.save()
 
     social_account, _ = SocialAccount.objects.get_or_create(
         user=user,
-        provider='github',
+        provider="github",
         uid=str(user_json.get("id")),
         extra_data=user_json,
     )
@@ -128,7 +127,7 @@ def github_callback(request):
     login_response = requests.post(
         f"{BASE_URL}accounts/github/login/finish/", data=data
     )
-    
+
     # 에러 처리 (Bad Request)
     if not login_response.ok:
         return JsonResponse(
@@ -137,26 +136,28 @@ def github_callback(request):
         )
 
     login_data = login_response.json()
-    login_data.pop("user",None) # user 정보 제외
+    login_data.pop("user", None)  # user 정보 제외
 
     return JsonResponse(login_data)
+
 
 class GithubLogin(SocialLoginView):
     adapter_class = github_view.GitHubOAuth2Adapter
     callback_url = GITHUB_CALLBACK_URI
     client_class = OAuth2Client
-    
+
+
 class CustomLogoutView(LogoutView):
     def logout(self, request):
         try:
-            refresh_token = request.COOKIES.get('refresh_token')
+            refresh_token = request.COOKIES.get("refresh_token")
             token = RefreshToken(refresh_token)
             token.blacklist()
         except Exception as e:
             print(e)
         response = super().logout(request)
-        response.delete_cookie('access_token')
-        response.delete_cookie('refresh_token')
+        response.delete_cookie("access_token")
+        response.delete_cookie("refresh_token")
         return response
 
 

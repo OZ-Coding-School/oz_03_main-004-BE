@@ -12,4 +12,3 @@ class StackList(APIView):
         stacks = Stack.objects.all()
         serializer = StackSerializer(stacks, many=True)
         return Response(serializer.data)
-    

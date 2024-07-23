@@ -8,10 +8,8 @@ urlpatterns = [
     path("accounts/", include("allauth.urls")),
     path("accounts/", include("users.urls")),
     path("baekjoons/", include("baekjoons.urls")),
-    path('attendances/', include('attendances.urls')), 
+    path("attendances/", include("attendances.urls")),
     path("potatoes/", include("potatoes.urls")),
     path("stacks/", include("stacks.urls")),
     path("stacks/", include("user_stacks.urls")),
 ]
-
-
