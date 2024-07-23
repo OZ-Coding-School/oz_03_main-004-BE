@@ -1,5 +1,4 @@
 from common.models import TimeStampedModel
-from common.models import TimeStampedModel
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
@@ -20,9 +19,6 @@ class UserManager(BaseUserManager):
         return user
 
     # 슈퍼 유저 생성 함수
-    def create_superuser(self, username, **extra_fields):
-        user = self.create_user(username**extra_fields)
-
     def create_superuser(self, username, **extra_fields):
         user = self.create_user(username**extra_fields)
 

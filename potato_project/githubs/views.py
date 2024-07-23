@@ -17,7 +17,7 @@ def decrypt_cookie(encrypted_value):
 
 @method_decorator(login_required, name="dispatch")
 class GetCommitDataView(View):
-    def get(self, request, userid):
+    def get(self, request):
         # github_access_token의 값을 가져온다
         encrypted_token = request.COOKIES.get("github_access_token")
         if not encrypted_token:
