@@ -1,8 +1,9 @@
 import os
 from datetime import timedelta
 from pathlib import Path
-from dotenv import load_dotenv
+
 from cryptography.fernet import Fernet
+from dotenv import load_dotenv
 
 # .env 파일 로드
 load_dotenv()
@@ -11,11 +12,13 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # 비밀 키 파일 경로 및 설정
-KEY_FILE_PATH = os.path.join(BASE_DIR, 'key_file.txt')
+KEY_FILE_PATH = os.path.join(BASE_DIR, "key_file.txt")
 if os.path.exists(KEY_FILE_PATH):
+
     def load_key():
         with open(KEY_FILE_PATH, "rb") as key_file:
             return key_file.read()
+
     FERNET_KEY = load_key()
 else:
     raise RuntimeError("key file이 없습니다.")
@@ -88,7 +91,6 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "allauth.account.middleware.AccountMiddleware",
-    
 ]
 
 # URL 설정
@@ -127,7 +129,9 @@ DATABASES = {
 
 # 비밀번호 검증 설정
 AUTH_PASSWORD_VALIDATORS = [
-    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
+    {
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"
+    },
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
     {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
@@ -175,7 +179,6 @@ SOCIAL_AUTH_GITHUB_SECRET = os.environ.get("SOCIAL_AUTH_GITHUB_SECRET")
 STATE = os.environ.get("STATE")
 
 
-
 # SOCIALACCOUNT_PROVIDERS = {
 #     "github": {
 #         "APP": {
@@ -194,8 +197,8 @@ SOCIALACCOUNT_PROVIDERS = {
             "read:org",
         ],
     }
+}
 
 SOCIALACCOUNT_LOGIN_ON_GET = True
 # LOGIN_REDIRECT_URL = "main"
 # ACCOUNT_LOGOUT_REDIRECT_URL = "index"
-
