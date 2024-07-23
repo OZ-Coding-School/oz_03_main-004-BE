@@ -139,13 +139,12 @@ def github_callback(request):
     print(f"Login response status: {login_response.status_code}")
     print(f"Login response content: {login_response.text}")
 
-    # 에러 처리 
     if not login_response.ok:
         return JsonResponse(
             {"err_msg": "failed to login"},
             status=status.HTTP_400_BAD_REQUEST,
         )
-      
+
     try:
         login_data = login_response.json()
     except json.JSONDecodeError:
@@ -170,6 +169,7 @@ def github_callback(request):
         samesite="Lax",
     )
     return response
+
 
 class GithubLogin(SocialLoginView):
     adapter_class = github_view.GitHubOAuth2Adapter
