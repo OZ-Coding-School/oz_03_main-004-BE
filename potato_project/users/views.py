@@ -135,7 +135,6 @@ def github_callback(request):
     social_account, _ = SocialAccount.objects.get_or_create(
         user=user,
         provider="github",
-        provider="github",
         uid=str(user_json.get("id")),
         extra_data=user_json,
     )
