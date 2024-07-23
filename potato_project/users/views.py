@@ -1,3 +1,4 @@
+import json
 import os
 from json.decoder import JSONDecodeError
 
@@ -8,23 +9,20 @@ from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 from dj_rest_auth.registration.views import SocialLoginView
 from dj_rest_auth.views import LogoutView
 from django.conf import settings
-from django.http import JsonResponse
+from django.db import IntegrityError
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect
-# .env 파일에서 환경 변수 로드 (python-dotenv 라이브러리 필요)
-from dotenv import load_dotenv
-from rest_framework import status
-from rest_framework.response import Response
-from rest_framework_simplejwt.tokens import RefreshToken
-from users.models import User
 
 # .env 파일에서 환경 변수 로드 (python-dotenv 라이브러리 필요)
 from dotenv import load_dotenv
+from rest_framework import status
+from rest_framework_simplejwt.tokens import RefreshToken
+from users.models import User
 
 load_dotenv()  # .env 파일 로드
 
 
 state = os.environ.get("STATE")
-BASE_URL = "http://localhost:8000/"  # 프론트엔드 URL로 변경해야 함
 BASE_URL = "http://localhost:8000/"  # 프론트엔드 URL로 변경해야 함
 GITHUB_CALLBACK_URI = BASE_URL + "accounts/github/callback/"
 
@@ -59,10 +57,6 @@ def github_callback(request):
             {"error": "No code provided"}, status=status.HTTP_400_BAD_REQUEST
         )
 
-        return JsonResponse(
-            {"error": "No code provided"}, status=status.HTTP_400_BAD_REQUEST
-        )
-
     print(f"Received code: {code}")
     print(f"Received state: {state}")
 
@@ -80,14 +74,12 @@ def github_callback(request):
     token_json = token_response.json()
     access_token = token_json.get("access_token")
 
-
     # 에러 처리
     if not token_response.ok:
         return JsonResponse(
             {"error": "Failed to get access token"},
             status=status.HTTP_400_BAD_REQUEST,
         )
-
 
     print(f"Token response: {token_response.json()}")
 
@@ -104,41 +96,39 @@ def github_callback(request):
             {"error": "Failed to get user info"}, status=status.HTTP_401_UNAUTHORIZED
         )
 
-        return JsonResponse(
-            {"error": "Failed to get user info"}, status=status.HTTP_401_UNAUTHORIZED
-        )
-
     print(f"User response: {user_response.json()}")
 
-
+    # 사용자 생성/업데이트 및 로그인
     username = user_json.get("login")
     if not username:
         # 깃허브 계정에 username 없는 경우
         return JsonResponse({"err_msg": "failed to signup"}, status=400)
 
-    # 사용자 생성/업데이트 및 로그인
     try:
         user = User.objects.get(username=username)
     except User.DoesNotExist:
         user = User.objects.create_user(
             username=username,
-            email=user_json.get("email"),
             profile_url=user_json.get("avatar_url"),
             github_id=user_json.get("login"),
         )
 
-    user.profile_url = user_json.get(
-        "avatar_url", user.profile_url
-    )  # 프로필 이미지 업데이트
+    # 프로필 이미지 업데이트
+    user.profile_url = user_json.get("avatar_url", user.profile_url)
     user.save()
 
-    social_account, _ = SocialAccount.objects.get_or_create(
-        user=user,
-        provider="github",
-        provider="github",
-        uid=str(user_json.get("id")),
-        extra_data=user_json,
-    )
+    try:
+        social_account, created = SocialAccount.objects.update_or_create(
+            user=user,
+            provider="github",
+            defaults={
+                "uid": str(user_json.get("id")),
+                "extra_data": user_json,
+            },
+        )
+    except IntegrityError:
+        # 이미 존재하는 계정이라면 그냥 진행
+        social_account = SocialAccount.objects.get(user=user, provider="github")
 
     # 로그인 처리 및 응답
     data = {"access_token": access_token, "code": code}
@@ -146,53 +136,72 @@ def github_callback(request):
         f"{BASE_URL}accounts/github/login/finish/", data=data
     )
 
+    print(f"Login response status: {login_response.status_code}")
+    print(f"Login response content: {login_response.text}")
 
-    # 에러 처리 (Bad Request)
+    # 에러 처리 
     if not login_response.ok:
         return JsonResponse(
             {"err_msg": "failed to login"},
             status=status.HTTP_400_BAD_REQUEST,
         )
+      
+    try:
+        login_data = login_response.json()
+    except json.JSONDecodeError:
+        return JsonResponse(
+            {"err_msg": "Invalid response from server"},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
 
-    login_data = login_response.json()
-    login_data.pop("user", None)  # user 정보 제외
-    login_data.pop("user", None)  # user 정보 제외
-
-    return JsonResponse(login_data)
-
-
+    response = JsonResponse(login_data)
+    response.set_cookie(
+        "access_token",
+        login_data.get("access_token"),
+        httponly=True,
+        secure=True,
+        samesite="Lax",
+    )
+    response.set_cookie(
+        "refresh_token",
+        login_data.get("refresh_token"),
+        httponly=True,
+        secure=True,
+        samesite="Lax",
+    )
+    return response
 
 class GithubLogin(SocialLoginView):
     adapter_class = github_view.GitHubOAuth2Adapter
     callback_url = GITHUB_CALLBACK_URI
     client_class = OAuth2Client
 
+    def get_response(self):
+        response = super().get_response()
+        if isinstance(response, HttpResponse):
+            user = self.user
+            refresh = RefreshToken.for_user(user)
 
+            try:
+                social_account = SocialAccount.objects.get(user=user, provider="github")
+            except SocialAccount.DoesNotExist:
+                # 소셜 계정이 없는 경우 처리
+                return JsonResponse({"error": "Social account not found"}, status=400)
 
-
-class CustomLogoutView(LogoutView):
-    def logout(self, request):
-        try:
-            refresh_token = request.COOKIES.get("refresh_token")
-            refresh_token = request.COOKIES.get("refresh_token")
-            token = RefreshToken(refresh_token)
-            token.blacklist()
-        except Exception as e:
-            print(e)
-        response = super().logout(request)
-        response.delete_cookie("access_token")
-        response.delete_cookie("refresh_token")
-        response.delete_cookie("access_token")
-        response.delete_cookie("refresh_token")
+            response_data = {
+                "access_token": str(refresh.access_token),
+                "refresh_token": str(refresh),
+                "user": {
+                    "pk": user.pk,
+                    "username": user.username,
+                    "profile_url": user.profile_url,
+                },
+            }
+            return JsonResponse(response_data)
         return response
 
-
-"""
-1. 전달받은 username과 동일한 username이 있는지 찾아본다.
-2-1. 만약 있다면?
-       - 있으면 로그인 진행, 해당 유저의 JWT 발급, 그러나 도중에          
-         예기치 못한 오류가 발생하면 에러 메세지와 함께 오류 Status 응답
-2-2. 없다면 (신규 유저이면)
-       - 회원가입 진행 및 해당 유저의 JWT 발급
-       - 그러나 도중에 예기치 못한 오류가 발생하면 에러 메세지와 함께 오류 Status응답
-"""
+    """
+    깃허브 소셜로그인만 단독으로 사용할거면
+    코드 간소화 가능
+    -> SocialAccount 모델을 사용하지 않고 직접 User 모델에 GitHub 정보를 저장하는 방식
+    """

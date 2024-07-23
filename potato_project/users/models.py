@@ -16,18 +16,13 @@ class UserManager(BaseUserManager):
         return user
 
     # 슈퍼 유저 생성 함수
-<<<<<<< HEAD
-    def create_superuser(self, username, **extra_fields):
-        user = self.create_user(username**extra_fields)
-=======
-    def create_superuser(self, username, password, **extra_fields):  
+    def create_superuser(self, username, password, **extra_fields):
         user = self.create_user(username, **extra_fields)
->>>>>>> develop
 
         user.is_superuser = True
         user.is_staff = True
 
-        user.set_password(password)
+        user.set_password(password)  # 비밀번호 해싱
         user.save()
 
         return user
@@ -52,14 +47,11 @@ class User(AbstractBaseUser, PermissionsMixin, TimeStampedModel):
 
     USERNAME_FIELD = "username"
     REQUIRED_FIELDS = []
-
-<<<<<<< HEAD
+    
+    # 유저를 생성 및 관리 (유저를 구분해서 관리하기 위해 - 관리자계정, 일반계정)
     objects = (
         UserManager()
-    )  # 유저를 생성 및 관리 (유저를 구분해서 관리하기 위해 - 관리자계정, 일반계정)
-=======
-    objects = UserManager()  # 유저를 생성 및 관리 (유저를 구분해서 관리하기 위해 - 관리자계정, 일반계정)
->>>>>>> develop
+    )  
 
     def __str__(self):
         return self.username
