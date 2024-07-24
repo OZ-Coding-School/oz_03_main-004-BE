@@ -7,7 +7,7 @@ from django.contrib.auth import get_user_model
 import json
 from django.views.decorators.csrf import csrf_exempt  # post 테스트를 위한 import
 
-
+#한달 성공횟수를 보여줘야함.
 class TodoView(View):
     # post test를 위한 임시 함수 실제 배포시 삭제해야함
     @csrf_exempt
@@ -34,7 +34,7 @@ class TodoView(View):
             },
             status=200,
         )
-
+#연월을 넣든 해서 필터를 거는게 좋을거같음
     def get_todo_list(self, request):
         todos = Todo.objects.all()
         todo_list = [
@@ -101,6 +101,8 @@ class TodoView(View):
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=400)
 
+
+#날짜랑 그날 완료율 보여주는것도 좋을거같다. 
     def get_completion_percentage(self, request, user_id=None):
         if user_id:
             todos = Todo.objects.filter(user_id=user_id)
