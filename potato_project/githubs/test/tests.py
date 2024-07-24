@@ -1,7 +1,8 @@
 # githubs/test/tests.py
-from django.test import TestCase, Client
-from django.urls import reverse
 from unittest.mock import patch
+
+from django.test import Client, TestCase
+from django.urls import reverse
 from users.models import User  # 커스터마이즈된 User 모델 임포트
 
 

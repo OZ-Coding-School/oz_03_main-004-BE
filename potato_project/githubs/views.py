@@ -1,19 +1,21 @@
-from django.http import JsonResponse
-from github import Github
-from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
-from django.views import View
 from cryptography.fernet import Fernet
 from django.conf import settings
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+from django.utils.decorators import method_decorator
+from django.views import View
+from github import Github
 
 # 비밀 키 설정
 SECRET_KEY = settings.FERNET_KEY
+
 
 # encrypted값을 복호화하는 함수
 def decrypt_cookie(encrypted_value):
     fernet = Fernet(SECRET_KEY)
     decrypted_value = fernet.decrypt(encrypted_value.encode()).decode()
     return decrypted_value
+
 
 @method_decorator(login_required, name="dispatch")
 class GetCommitDataView(View):

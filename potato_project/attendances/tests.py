@@ -1,11 +1,12 @@
 from django.contrib.auth import get_user_model
 from django.urls import reverse
+from django.utils import timezone
 from rest_framework import status
-from rest_framework.test import APITestCase, APIClient
+from rest_framework.test import APIClient, APITestCase
 from rest_framework_simplejwt.tokens import RefreshToken
+
 from .models import Attendance
 from .serializers import AttendanceSerializer
-from django.utils import timezone
 
 User = get_user_model()
 
@@ -75,6 +76,4 @@ class AttendanceViewSetTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         attendance = Attendance.objects.get(user_id=self.user)
         self.assertEqual(attendance.coin_awarded, 2)
-        self.assertEqual(
-            response.data, {"message": "물건을 구매했습니다.", "coin_awarded": 2}
-        )
+        self.assertEqual(response.data, {"message": "물건을 구매했습니다.", "coin_awarded": 2})

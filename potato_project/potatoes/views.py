@@ -26,8 +26,9 @@ class PotatoesList(APIView):
             return Response({"error": "object가 존재하지 않습니다", "details": str(e)}, status=status.HTTP_404_NOT_FOUND)
         # 기타 일반 예외 처리
         except Exception as e:
-            return Response({"error": '예기치 않은 오류가 발생했습니다', 'details': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)    
+            return Response({"error": "예기치 않은 오류가 발생했습니다", "details": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)    
         return Response(serializer.data)
+
 
 # 유저의 감자 하나 조회
 class MyPotatoDetail(APIView):
@@ -50,8 +51,8 @@ class MyPotatoDetail(APIView):
         # 기타 일반 예외 처리
         except Exception as e:
             return Response({'error': '예기치 않은 오류가 발생했습니다', 'details': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
         return Response(serializer.data)
+
 
 # 유저의 감자 선택 상태 변경
 class PotatoSelectPatch(APIView):
