@@ -34,6 +34,7 @@ class UserManager(BaseUserManager):
 class User(AbstractBaseUser, PermissionsMixin, TimeStampedModel):
     # 로그인 관련 필드
     username = models.CharField(max_length=255, null=False, unique=True)
+    github_access_token = models.CharField(max_length=255, null=True, blank=True)
 
     # 프로필 관련 필드
     profile_url = models.CharField(max_length=255, null=True)
