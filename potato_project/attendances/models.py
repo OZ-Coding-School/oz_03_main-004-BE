@@ -4,10 +4,8 @@ from users.models import User
 
 
 class Attendance(TimeStampedModel):
-    #_id 제거
-    user = models.ForeignKey(
-        User, on_delete=models.CASCADE, verbose_name="유저아이디"
-    )
+    # _id 제거
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="유저아이디")
     date = models.DateField(verbose_name="날짜")
     coin_awarded = models.IntegerField(verbose_name="지급된 코인수")
 

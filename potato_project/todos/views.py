@@ -5,16 +5,19 @@ from .models import Todo
 from django.utils.dateparse import parse_date  # 문자열을 날짜 객체로 변환
 from django.contrib.auth import get_user_model
 import json
-from django.views.decorators.csrf import csrf_exempt # post 테스트를 위한 import
+from django.views.decorators.csrf import csrf_exempt  # post 테스트를 위한 import
+
+
 class TodoView(View):
-    #post test를 위한 임시 함수 실제 배포시 삭제해야함
+    # post test를 위한 임시 함수 실제 배포시 삭제해야함
     @csrf_exempt
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
+
     def get(self, request, todo_id=None, user_id=None):
         if todo_id:
             return self.get_todo_detail(request, todo_id)
-        elif 'completion_percentage' in request.path:
+        elif "completion_percentage" in request.path:
             return self.get_completion_percentage(request, user_id)
         else:
             return self.get_todo_list(request)
@@ -49,9 +52,7 @@ class TodoView(View):
     def post(self, request):
         try:
             data = json.loads(request.body)
-            user = get_object_or_404(
-                get_user_model(), id=data["user_id"]
-            )
+            user = get_object_or_404(get_user_model(), id=data["user_id"])
             todo = Todo.objects.create(
                 user_id=user,
                 task=data["task"],
@@ -108,7 +109,9 @@ class TodoView(View):
 
         total_tasks = todos.count()
         completed_tasks = todos.filter(is_done=True).count()
-        completion_percentage = (completed_tasks / total_tasks) * 100 if total_tasks > 0 else 0
+        completion_percentage = (
+            (completed_tasks / total_tasks) * 100 if total_tasks > 0 else 0
+        )
 
         return JsonResponse(
             {
@@ -118,4 +121,3 @@ class TodoView(View):
             },
             status=200,
         )
-
