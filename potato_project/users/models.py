@@ -1,6 +1,9 @@
 from common.models import TimeStampedModel
-from django.contrib.auth.models import (AbstractBaseUser, BaseUserManager,
-                                        PermissionsMixin)
+from django.contrib.auth.models import (
+    AbstractBaseUser,
+    BaseUserManager,
+    PermissionsMixin,
+)
 from django.db import models
 
 
@@ -31,6 +34,7 @@ class UserManager(BaseUserManager):
 class User(AbstractBaseUser, PermissionsMixin, TimeStampedModel):
     # 로그인 관련 필드
     username = models.CharField(max_length=255, null=False, unique=True)
+    github_access_token = models.CharField(max_length=255, null=True, blank=True)
 
     # 프로필 관련 필드
     profile_url = models.CharField(max_length=255, null=True)
@@ -47,11 +51,9 @@ class User(AbstractBaseUser, PermissionsMixin, TimeStampedModel):
 
     USERNAME_FIELD = "username"
     REQUIRED_FIELDS = []
-    
+
     # 유저를 생성 및 관리 (유저를 구분해서 관리하기 위해 - 관리자계정, 일반계정)
-    objects = (
-        UserManager()
-    )  
+    objects = UserManager()
 
     def __str__(self):
         return self.username
