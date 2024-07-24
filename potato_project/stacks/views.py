@@ -3,7 +3,7 @@ from django.db import DatabaseError
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framwork.exceptions import ValidationError
+from rest_framework.exceptions import ValidationError
 
 from .models import Stack
 from .serializers import StackSerializer
