@@ -115,6 +115,7 @@ def github_callback(request):
 
     # 프로필 이미지 업데이트
     user.profile_url = user_json.get("avatar_url", user.profile_url)
+    user.github_access_token = access_token
     user.save()
 
     try:

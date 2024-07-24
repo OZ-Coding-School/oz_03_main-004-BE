@@ -1,19 +1,25 @@
-from django.http import JsonResponse
-from github import Github
-from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
-from django.views import View
+import requests
 from cryptography.fernet import Fernet
 from django.conf import settings
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+from django.utils.decorators import method_decorator
+from django.views import View
+from github import Github
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 # 비밀 키 설정
 SECRET_KEY = settings.FERNET_KEY
+
 
 # encrypted값을 복호화하는 함수
 def decrypt_cookie(encrypted_value):
     fernet = Fernet(SECRET_KEY)
     decrypted_value = fernet.decrypt(encrypted_value.encode()).decode()
     return decrypted_value
+
 
 @method_decorator(login_required, name="dispatch")
 class GetCommitDataView(View):
@@ -57,3 +63,32 @@ class GetCommitDataView(View):
         }
 
         return JsonResponse(result, safe=False)
+
+
+class GithubCommitsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        if not user.github_access_token:
+            return Response({"error": "GitHub access token not found"}, status=400)
+
+        repo = request.GET.get("repo")
+        if not repo:
+            return Response({"error": "Repository not specified"}, status=400)
+
+        github_api_url = f"https://api.github.com/repos/{repo}/commits"
+        headers = {
+            "Authorization": f"token {user.github_access_token}",
+            "Accept": "application/vnd.github.v3+json",
+        }
+
+        response = requests.get(github_api_url, headers=headers)
+
+        if response.status_code == 200:
+            commits = response.json()
+            return Response(commits)
+        else:
+            return Response(
+                {"error": "Failed to fetch commits"}, status=response.status_code
+            )
