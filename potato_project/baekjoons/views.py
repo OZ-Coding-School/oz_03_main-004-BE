@@ -1,4 +1,4 @@
-# baekjoons/views.py
+ #baekjoons/views.py
 import requests
 from django.http import JsonResponse
 from django.shortcuts import render
