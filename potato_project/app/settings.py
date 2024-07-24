@@ -23,14 +23,10 @@ if os.path.exists(KEY_FILE_PATH):
 else:
     raise RuntimeError("key file이 없습니다.")
 
-# Django 비밀 키 및 디버그 설정(github test를 위해 잠시 주석)
-# SECRET_KEY = os.environ.get("SECRET_KEY")
-# DEBUG = os.environ.get("DEBUG") == "True"
-# ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split(",")
-SECRET_KEY = settings.FERNET_KEY
-fernet = Fernet(SECRET_KEY)
-encrypted_token = fernet.encrypt(token.encode()).decode()
-
+# Django 비밀 키 및 디버그 설정
+SECRET_KEY = os.environ.get("SECRET_KEY")
+DEBUG = os.environ.get("DEBUG") == "True"
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split(",")
 
 # Application definition
 DJANGO_SYSTEM_APPS = [
