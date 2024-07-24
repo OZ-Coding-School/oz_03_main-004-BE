@@ -9,7 +9,8 @@ from django.conf import settings
 # 비밀 키 설정
 SECRET_KEY = settings.FERNET_KEY
 
-
+#쿠키 헤더에 깃허브 액세스토큰이 온다. 필요없는 부분삭제
+#db에 저장해야하는 코드 추가
 # encrypted값을 복호화하는 함수
 def decrypt_cookie(encrypted_value):
     fernet = Fernet(SECRET_KEY)
