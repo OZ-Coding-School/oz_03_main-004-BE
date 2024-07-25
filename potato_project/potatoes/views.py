@@ -12,11 +12,15 @@ from .serializers import PotatoSerializer
 
 # 유저의 감자 조회
 class MyPotatoDetail(APIView):
-    def get(self, request, user_id):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
         try:
-            potato = Potato.objects.filter(user_id=user_id)
+            potato = Potato.objects.filter(user=request.user)  # request.user 사용
             if not potato.exists():
-                raise ObjectDoesNotExist(f"No potatoes found for user_id {user_id}")
+                raise ObjectDoesNotExist(
+                    f"No potatoes found for user {request.user}"
+                )  # request.user 사용
 
             serializer = PotatoSerializer(potato, many=True)
         # 데이터베이스 연결 또는 쿼리 오류 처리
@@ -42,17 +46,19 @@ class MyPotatoDetail(APIView):
                 {"error": "예기치 않은 오류가 발생했습니다", "details": str(e)},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
+
         return Response(serializer.data)
 
 
 # 유저의 감자 선택 상태 변경
 class PotatoSelectPatch(APIView):
     permission_classes = [IsAuthenticated]
-    def patch(self, request, user_id):
+
+    def patch(self, request):
         try:
             potato = Potato.objects.filter(
-                user_id=user_id, data=request.data, partial=True
-            )
+                user=request.user, data=request.data, partial=True
+            )  # request.user 사용
 
             if not potato.exists():
                 return Response(
@@ -68,7 +74,7 @@ class PotatoSelectPatch(APIView):
             is_selected = request.data["is_selected"]
             if is_selected:
                 # 유저가 가지고 있는 모든 감자의 is_selected 값을 False로
-                Potato.objects.filter(user_id=user_id).update(is_selected=False)
+                Potato.objects.filter(user=request.user).update(is_selected=False)
 
             # 유저가 선택한 감자의 is_selected 값을 True로
             serializer = PotatoSerializer(
@@ -80,25 +86,21 @@ class PotatoSelectPatch(APIView):
                 return Response(serializer.data)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        # 데이터베이스 연결 또는 쿼리 오류 처리
         except DatabaseError as e:
             return Response(
                 {"error": "Database error occurred"},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
-        # 시리얼라이저 오류 처리
         except ValidationError as e:
             return Response(
                 {"error": "Serialization error occurred", "details": e.detail},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        # 객체가 존재하지 않을 때의 오류 처리
         except ObjectDoesNotExist as e:
             return Response(
                 {"error": "Object does not exist", "details": str(e)},
                 status=status.HTTP_404_NOT_FOUND,
             )
-        # 기타 일반 예외 처리
         except Exception as e:
             return Response(
                 {"error": "An unexpected error occurred", "details": str(e)},
