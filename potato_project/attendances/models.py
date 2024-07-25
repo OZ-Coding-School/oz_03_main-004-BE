@@ -10,4 +10,4 @@ class Attendance(TimeStampedModel):
     coin_awarded = models.IntegerField(verbose_name="지급된 코인수")
 
     def __str__(self):
-        return f"{self.user_id.username} - {self.date}"
+        return f"{self.user.username} - {self.date}"
