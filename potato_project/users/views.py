@@ -1,7 +1,6 @@
 import json
 import os
 from json.decoder import JSONDecodeError
-
 import requests
 from allauth.socialaccount.models import SocialAccount
 from allauth.socialaccount.providers.github import views as github_view
@@ -12,6 +11,8 @@ from django.conf import settings
 from django.db import IntegrityError
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
 
 # .env 파일에서 환경 변수 로드 (python-dotenv 라이브러리 필요)
 from dotenv import load_dotenv
@@ -206,3 +207,20 @@ class GithubLogin(SocialLoginView):
     코드 간소화 가능
     -> SocialAccount 모델을 사용하지 않고 직접 User 모델에 GitHub 정보를 저장하는 방식
     """
+
+class UpdateBaekjoonIDView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        bj_id = request.data.get('baekjoon_id')
+        
+        if not bj_id:
+            return Response(
+                {'status': 'error', 'message': '백준 아이디를 입력해주세요.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        request.user.baekjoon_id = bj_id
+        request.user.save()
+
+        return Response({'status': 'success'}, status=status.HTTP_200_OK)

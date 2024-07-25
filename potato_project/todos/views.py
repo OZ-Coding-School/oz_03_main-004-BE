@@ -1,9 +1,9 @@
-# views.py
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.utils import timezone
 from django.db.models import Count, Case, When, IntegerField
+from datetime import datetime, timedelta
 from .models import Todo
 from .serializers import TodoSerializer
 
@@ -45,8 +45,8 @@ class MonthlyCompletionRateView(generics.ListAPIView):
     def list(self, request, *args, **kwargs):
         year = self.kwargs['year']
         month = self.kwargs['month']
-        start_date = timezone.datetime(year, month, 1)
-        end_date = start_date.replace(month=start_date.month+1, day=1) - timezone.timedelta(days=1)
+        start_date = datetime(year, month, 1)
+        end_date = (start_date.replace(month=start_date.month+1, day=1) - timedelta(days=1))
         
         daily_rates = Todo.objects.filter(
             user=request.user,
