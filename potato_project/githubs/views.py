@@ -1,51 +1,34 @@
 import requests
-from django.conf import settings
-from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-from django.utils.decorators import method_decorator
-from django.views import View
-from github import Github
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import Github as GithubModel
 from django.utils import timezone
 
-@method_decorator(login_required, name="dispatch")
-class GetCommitDataView(View):
-    def get(self, request):
-        # User 객체를 통해 GitHub 액세스 토큰 가져오기
-        user = request.user
-        if not user.github_access_token:
-            return JsonResponse(
-                {"error": "프로필에서 github token을 찾을수없습니다."}, status=404
-            )
+# githubs api를 불러오는 함수
+class GitHubAPIService:
+    def __init__(self, access_token):
+        self.access_token = access_token
 
-        try:
-            token = user.github_access_token
-        except Exception as e:
-            return JsonResponse({"error": "토큰을 이용할 수 없습니다."}, status=400)
+    def get_commits(self, repo):
+        github_api_url = f"https://api.github.com/repos/{repo}/commits"
+        headers = {
+            "Authorization": f"token {self.access_token}",
+            "Accept": "application/vnd.github.v3+json",
+        }
 
-        # pygithub를 사용하여 github token api 클라이언트를 생성
-        g = Github(token)
-        github_user = g.get_user()
-        commit_data = []
+        response = requests.get(github_api_url, headers=headers)
 
-        # 모든 공개 레포지토리에서 커밋 수와 날짜를 가져옵니다./ 레포지토리가 있어야 커밋을 알수있음.
-        for repo in github_user.get_repos():
-            if not repo.private:
-                commits = repo.get_commits()
-                for commit in commits:
-                    commit_data.append({"commit_date": commit.commit.author.date})
+        if response.status_code == 200:
+            return response.json()
+        else:
+            return None, response.status_code
 
-        commit_count = len(commit_data)
-        latest_commit_date = (
-            max(commit["commit_date"] for commit in commit_data)
-            if commit_data
-            else None
-        )
-
-        # 기존 레코드를 업데이트하거나 새 레코드를 생성/ 유저가 없으면 새롭게 생성함
+# 데이터베이스에 커밋과 날짜를 저장하는 함수
+class GitHubDatabaseService:
+    @staticmethod
+    def update_or_create_commit_record(user, commit_count, latest_commit_date):
         GithubModel.objects.update_or_create(
             user=user,
             defaults={
@@ -53,17 +36,14 @@ class GetCommitDataView(View):
                 "date": timezone.now(),
             }
         )
-
-        result = {
+        return {
             "commit_count": commit_count,
             "latest_commit_date": (
                 latest_commit_date.isoformat() if latest_commit_date else None
             ),
         }
 
-        return JsonResponse(result, safe=False)
-
-#커밋 정보에 다가가기 위해서는 사용자가 인증되있어야하는 코드 
+# Github api를 호출하고 db에 업데이트 하는 함수
 class GithubCommitsView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -76,18 +56,18 @@ class GithubCommitsView(APIView):
         if not repo:
             return Response({"error": "커밋을 위한 레포지토리가 존재하지 않습니다."}, status=400)
 
-        github_api_url = f"https://api.github.com/repos/{repo}/commits"
-        headers = {
-            "Authorization": f"token {user.github_access_token}",
-            "Accept": "application/vnd.github.v3+json",
-        }
+        github_service = GitHubAPIService(user.github_access_token)
+        commits, status_code = github_service.get_commits(repo)
 
-        response = requests.get(github_api_url, headers=headers)
+        if commits is not None:
+            commit_count = len(commits)
+            latest_commit_date = commits[0]['commit']['author']['date'] if commits else None
 
-        if response.status_code == 200:
-            commits = response.json()
-            return Response(commits)
+            db_service = GitHubDatabaseService()
+            result = db_service.update_or_create_commit_record(user, commit_count, latest_commit_date)
+
+            return JsonResponse(result, safe=False)
         else:
             return Response(
-                {"error": "커밋 요청을 실패했습니다."}, status=response.status_code
+                {"error": "커밋 요청을 실패했습니다."}, status=status_code
             )
