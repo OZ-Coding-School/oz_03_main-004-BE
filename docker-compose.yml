@@ -5,6 +5,7 @@ services:
       context: .
       args:
         - DEV=true
+    platform: linux/amd64
     ports:
       - "8000:8000"
       - "3000:3000" # debugger
@@ -22,18 +23,17 @@ services:
       - DB_PASSWORD=${DB_PASSWORD}
       - PYDEVD_DISABLE_FILE_VALIDATION=1
     env_file:
-      - .env  
+      - .env
     depends_on:
       - db
-    
 
   db: # PostgreSQL Database
-   image: postgres:16-alpine
-   volumes: 
-     - ./data/db:/var/lib/postgresql/data
-   environment:
-     - POSTGRES_DB=${POSTGRES_DB}
-     - POSTGRES_USER=${POSTGRES_USER}
-     - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-   env_file:
-      - .env  
+    image: postgres:16-alpine
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    env_file:
+      - .env
