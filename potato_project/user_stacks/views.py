@@ -1,4 +1,5 @@
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -8,28 +9,32 @@ from .serializers import UserStackSerializer
 
 # 유저 스택 리스트 조회
 class UserStackList(APIView):
-    def get(self, request, user_id):
-        stacks = UserStack.objects.filter(user_id=user_id)
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):  # user_id 매개변수 제거
+        stacks = UserStack.objects.filter(user=request.user)  # request.user 사용
         serializer = UserStackSerializer(stacks, many=True)
         return Response(serializer.data)
 
 
 # 유저 스택 리스트 저장
 class UserStackCreate(APIView):
-    def post(self, request, user_id):
-        stacks = UserStack.objects.filter(user_id=user_id, data=request.data)
-        serializer = UserStackSerializer(stacks)
+    permission_classes = [IsAuthenticated]
 
+    def post(self, request):  # user_id 매개변수 제거
+        serializer = UserStackSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
+            serializer.save(user=request.user)  # request.user 사용
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 # 유저 스택 리스트 업데이트
-class UserStackPacth(APIView):
-    def patch(self, request, user_id):
-        stacks = UserStack.objects.filter(user_id=user_id, data=request.data)
+class UserStackPatch(APIView):  # Patch 로 수정
+    permission_classes = [IsAuthenticated]
+
+    def patch(self, request):  # user_id 매개변수 제거
+        stacks = UserStack.objects.filter(user=request.user)  # request.user 사용
 
         if not stacks.exists():
             return Response(
