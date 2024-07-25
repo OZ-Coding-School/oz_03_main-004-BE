@@ -5,7 +5,7 @@ from users.models import User
 
 
 class Potato(TimeStampedModel):
-    #id제거
-    user = models.ForeignKey(User, on_delete=models.CASCADE,  null=True, blank=True)
+    # id제거
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     potato_type_id = models.ForeignKey(PotatoType, on_delete=models.CASCADE)
     is_selected = models.BooleanField(blank=True, null=True)
