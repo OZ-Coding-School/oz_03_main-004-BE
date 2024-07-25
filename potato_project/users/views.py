@@ -7,7 +7,6 @@ from allauth.socialaccount.models import SocialAccount
 from allauth.socialaccount.providers.github import views as github_view
 from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 from dj_rest_auth.registration.views import SocialLoginView
-from dj_rest_auth.views import LogoutView
 from django.conf import settings
 from django.db import IntegrityError
 from django.http import HttpResponse, JsonResponse
