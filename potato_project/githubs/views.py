@@ -26,7 +26,7 @@ class GetCommitDataView(View):
             return JsonResponse(
                 {"error": "GitHub token not found in cookies"}, status=404
             )
-
+        
         try:
             token = decrypt_cookie(encrypted_token)
         except Exception as e:
