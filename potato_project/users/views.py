@@ -6,9 +6,9 @@ from allauth.socialaccount.models import SocialAccount
 from allauth.socialaccount.providers.github import views as github_view
 from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 from dj_rest_auth.registration.views import SocialLoginView
-from dj_rest_auth.views import LogoutView
 from django.conf import settings
-from django.db import IntegrityError
+from django.core.exceptions import ObjectDoesNotExist
+from django.db import DatabaseError, IntegrityError
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect
 from rest_framework.views import APIView
@@ -17,8 +17,14 @@ from rest_framework.permissions import IsAuthenticated
 # .env 파일에서 환경 변수 로드 (python-dotenv 라이브러리 필요)
 from dotenv import load_dotenv
 from rest_framework import status
+from rest_framework.exceptions import ValidationError
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from users.models import User
+
+from .serializers import UserSerializer
 
 load_dotenv()  # .env 파일 로드
 
@@ -209,6 +215,40 @@ class GithubLogin(SocialLoginView):
     """
 
 
+# 유저 프로필 정보 조회
+class UserDetail(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        try:
+            serializer = UserSerializer(user)
+            return Response(serializer.data)
+
+        # 데이터베이스 연결 또는 쿼리 오류 처리
+        except DatabaseError as e:
+            return Response(
+                {"error": "DB 에러 발생"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+        # 시리얼라이저 오류 처리
+        except ValidationError as e:
+            return Response(
+                {"error": "Serializer 에러 발생", "details": e.detail},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        # 객체가 존재하지 않을 때의 오류 처리
+        except ObjectDoesNotExist as e:
+            return Response(
+                {"error": "object가 존재하지 않습니다", "details": str(e)},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        # 기타 일반 예외 처리
+        except Exception as e:
+            return Response(
+                {"error": "예기치 않은 오류가 발생했습니다", "details": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
 class UpdateBaekjoonIDView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -225,3 +265,4 @@ class UpdateBaekjoonIDView(APIView):
         request.user.save()
 
         return Response({"status": "success"}, status=status.HTTP_200_OK)
+

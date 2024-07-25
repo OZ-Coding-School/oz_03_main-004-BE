@@ -1,9 +1,9 @@
+from django.core.exceptions import ObjectDoesNotExist
+from django.db import DatabaseError
 from rest_framework import status
+from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from django.db import DatabaseError
-from rest_framework.exceptions import ValidationError
-from django.core.exceptions import ObjectDoesNotExist
 
 from .models import Potato
 from .serializers import PotatoSerializer
@@ -41,7 +41,7 @@ class PotatoesList(APIView):
         return Response(serializer.data)
 
 
-# 유저의 감자 하나 조회
+# 유저의 감자 조회
 class MyPotatoDetail(APIView):
     def get(self, request, user_id):
         try:
