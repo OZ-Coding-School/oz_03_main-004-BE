@@ -39,11 +39,14 @@ class User(AbstractBaseUser, PermissionsMixin, TimeStampedModel):
     # 프로필 관련 필드
     profile_url = models.CharField(max_length=255, null=True)
     github_id = models.CharField(max_length=255, null=True)
-    baekjoon_id = models.CharField(max_length=255, null=True, default="")
+    baekjoon_id = models.CharField(
+        max_length=255, null=True, default=""
+    )  # 백준 아이디 필드 추가
 
     # 감자 관련 필드
     potato_level = models.PositiveIntegerField(null=False, default=0)
     potato_exp = models.PositiveIntegerField(null=False, default=0)
+    total_coins = models.PositiveIntegerField(default=0)
 
     # Permissions Mixin : 유저의 권한 관리
     is_active = models.BooleanField(default=True)

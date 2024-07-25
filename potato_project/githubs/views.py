@@ -1,94 +1,80 @@
 import requests
-from cryptography.fernet import Fernet
-from django.conf import settings
-from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-from django.utils.decorators import method_decorator
-from django.views import View
-from github import Github
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
-# 비밀 키 설정
-SECRET_KEY = settings.FERNET_KEY
-
-
-# encrypted값을 복호화하는 함수
-def decrypt_cookie(encrypted_value):
-    fernet = Fernet(SECRET_KEY)
-    decrypted_value = fernet.decrypt(encrypted_value.encode()).decode()
-    return decrypted_value
+from .models import Github as GithubModel
+from django.utils import timezone
 
 
-@method_decorator(login_required, name="dispatch")
-class GetCommitDataView(View):
-    def get(self, request):
-        # github_access_token의 값을 가져온다
-        encrypted_token = request.COOKIES.get("github_access_token")
-        if not encrypted_token:
-            return JsonResponse(
-                {"error": "GitHub token not found in cookies"}, status=404
-            )
+# githubs api를 불러오는 함수
+class GitHubAPIService:
+    def __init__(self, access_token):
+        self.access_token = access_token
 
-        try:
-            token = decrypt_cookie(encrypted_token)
-        except Exception as e:
-            return JsonResponse({"error": "Invalid token"}, status=400)
-
-        # pygithub를 사용하여 github token api 클라이언트를 생성
-        g = Github(token)
-        github_user = g.get_user()
-        commit_data = []
-
-        # 모든 공개 레포지토리에서 커밋 수와 날짜를 가져옵니다.
-        for repo in github_user.get_repos():
-            if not repo.private:
-                commits = repo.get_commits()
-                for commit in commits:
-                    commit_data.append({"commit_date": commit.commit.author.date})
-
-        commit_count = len(commit_data)
-        latest_commit_date = (
-            max(commit["commit_date"] for commit in commit_data)
-            if commit_data
-            else None
-        )
-
-        result = {
-            "commit_count": commit_count,
-            "latest_commit_date": (
-                latest_commit_date.isoformat() if latest_commit_date else None
-            ),
-        }
-
-        return JsonResponse(result, safe=False)
-
-
-class GithubCommitsView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        user = request.user
-        if not user.github_access_token:
-            return Response({"error": "GitHub access token not found"}, status=400)
-
-        repo = request.GET.get("repo")
-        if not repo:
-            return Response({"error": "Repository not specified"}, status=400)
-
+    def get_commits(self, repo):
         github_api_url = f"https://api.github.com/repos/{repo}/commits"
         headers = {
-            "Authorization": f"token {user.github_access_token}",
+            "Authorization": f"token {self.access_token}",
             "Accept": "application/vnd.github.v3+json",
         }
 
         response = requests.get(github_api_url, headers=headers)
 
         if response.status_code == 200:
-            commits = response.json()
-            return Response(commits)
+            return response.json()
         else:
+            return None, response.status_code
+
+
+# 데이터베이스에 커밋과 날짜를 저장하는 함수
+class GitHubDatabaseService:
+    @staticmethod
+    def update_or_create_commit_record(user, commit_count, latest_commit_date):
+        GithubModel.objects.update_or_create(
+            user=user,
+            defaults={
+                "commit_num": commit_count,
+                "date": timezone.now(),
+            },
+        )
+        return {
+            "commit_count": commit_count,
+            "latest_commit_date": (
+                latest_commit_date.isoformat() if latest_commit_date else None
+            ),
+        }
+
+
+# Github api를 호출하고 db에 업데이트 하는 함수
+class GithubCommitsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        if not user.github_access_token:
+            return Response({"error": "사용자 권한이 없습니다."}, status=400)
+
+        repo = request.GET.get("repo")
+        if not repo:
             return Response(
-                {"error": "Failed to fetch commits"}, status=response.status_code
+                {"error": "커밋을 위한 레포지토리가 존재하지 않습니다."}, status=400
             )
+
+        github_service = GitHubAPIService(user.github_access_token)
+        commits, status_code = github_service.get_commits(repo)
+
+        if commits is not None:
+            commit_count = len(commits)
+            latest_commit_date = (
+                commits[0]["commit"]["author"]["date"] if commits else None
+            )
+
+            db_service = GitHubDatabaseService()
+            result = db_service.update_or_create_commit_record(
+                user, commit_count, latest_commit_date
+            )
+
+            return JsonResponse(result, safe=False)
+        else:
+            return Response({"error": "커밋 요청을 실패했습니다."}, status=status_code)
