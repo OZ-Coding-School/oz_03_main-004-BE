@@ -6,6 +6,7 @@ from rest_framework.views import APIView
 from .models import Github as GithubModel
 from django.utils import timezone
 
+
 # githubs api를 불러오는 함수
 class GitHubAPIService:
     def __init__(self, access_token):
@@ -25,6 +26,7 @@ class GitHubAPIService:
         else:
             return None, response.status_code
 
+
 # 데이터베이스에 커밋과 날짜를 저장하는 함수
 class GitHubDatabaseService:
     @staticmethod
@@ -34,7 +36,7 @@ class GitHubDatabaseService:
             defaults={
                 "commit_num": commit_count,
                 "date": timezone.now(),
-            }
+            },
         )
         return {
             "commit_count": commit_count,
@@ -42,6 +44,7 @@ class GitHubDatabaseService:
                 latest_commit_date.isoformat() if latest_commit_date else None
             ),
         }
+
 
 # Github api를 호출하고 db에 업데이트 하는 함수
 class GithubCommitsView(APIView):
@@ -54,20 +57,24 @@ class GithubCommitsView(APIView):
 
         repo = request.GET.get("repo")
         if not repo:
-            return Response({"error": "커밋을 위한 레포지토리가 존재하지 않습니다."}, status=400)
+            return Response(
+                {"error": "커밋을 위한 레포지토리가 존재하지 않습니다."}, status=400
+            )
 
         github_service = GitHubAPIService(user.github_access_token)
         commits, status_code = github_service.get_commits(repo)
 
         if commits is not None:
             commit_count = len(commits)
-            latest_commit_date = commits[0]['commit']['author']['date'] if commits else None
+            latest_commit_date = (
+                commits[0]["commit"]["author"]["date"] if commits else None
+            )
 
             db_service = GitHubDatabaseService()
-            result = db_service.update_or_create_commit_record(user, commit_count, latest_commit_date)
+            result = db_service.update_or_create_commit_record(
+                user, commit_count, latest_commit_date
+            )
 
             return JsonResponse(result, safe=False)
         else:
-            return Response(
-                {"error": "커밋 요청을 실패했습니다."}, status=status_code
-            )
+            return Response({"error": "커밋 요청을 실패했습니다."}, status=status_code)

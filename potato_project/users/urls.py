@@ -10,6 +10,7 @@ urlpatterns = [
         views.GithubLogin.as_view(),
         name="github_login_todjango",
     ),
-    path('update-baekjoon-id/', UpdateBaekjoonIDView.as_view(), name='update-baekjoon-id'),
+    path(
+        "update-baekjoon-id/", UpdateBaekjoonIDView.as_view(), name="update-baekjoon-id"
+    ),
 ]
-

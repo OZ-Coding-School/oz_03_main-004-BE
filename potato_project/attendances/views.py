@@ -8,6 +8,7 @@ from .models import Attendance
 from .serializers import AttendanceSerializer
 from users.models import User
 
+
 class AttendanceViewSet(viewsets.ViewSet):
     permission_classes = [IsAuthenticated]
 
@@ -25,7 +26,9 @@ class AttendanceViewSet(viewsets.ViewSet):
             serializer = AttendanceSerializer(attendance_records, many=True)
             return Response(serializer.data)
         else:
-            return Response({"message": "출석 기록이 없습니다."}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"message": "출석 기록이 없습니다."}, status=status.HTTP_404_NOT_FOUND
+            )
 
     # 사용자 출석을 처리하고, 매일 한번 출석하도록 제한하는 기능
     @action(detail=False, methods=["post"])

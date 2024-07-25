@@ -208,19 +208,20 @@ class GithubLogin(SocialLoginView):
     -> SocialAccount 모델을 사용하지 않고 직접 User 모델에 GitHub 정보를 저장하는 방식
     """
 
+
 class UpdateBaekjoonIDView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        bj_id = request.data.get('baekjoon_id')
-        
+        bj_id = request.data.get("baekjoon_id")
+
         if not bj_id:
             return Response(
-                {'status': 'error', 'message': '백준 아이디를 입력해주세요.'},
-                status=status.HTTP_400_BAD_REQUEST
+                {"status": "error", "message": "백준 아이디를 입력해주세요."},
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
         request.user.baekjoon_id = bj_id
         request.user.save()
 
-        return Response({'status': 'success'}, status=status.HTTP_200_OK)
+        return Response({"status": "success"}, status=status.HTTP_200_OK)
