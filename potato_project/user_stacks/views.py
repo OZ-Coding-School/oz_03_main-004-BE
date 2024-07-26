@@ -58,16 +58,16 @@ class UserStackPatch(APIView):  # Patch 로 수정
 class UserStackDelete(APIView):
     permission_classes = [IsAuthenticated]
 
-    def delete(self, request):
-        stacks = UserStack.objects.filter(user=request.user)
-
-        if not stacks.exists():
+    def delete(self, request, stack_id):
+        try:
+            stack = UserStack.objects.get(user=request.user, id=stack_id)
+        except UserStack.DoesNotExist:
             return Response(
-                {"error": "No stacks found for this user"},
+                {"error": "Stack not found for this user"},
                 status=status.HTTP_404_NOT_FOUND,
             )
 
-        stacks.delete()
+        stack.delete()
         return Response(
-            {"message": "Stacks deleted successflully"}, status=status.HTTP_200_OK
+            {"message": "Stack deleted successfully"}, status=status.HTTP_200_OK
         )
