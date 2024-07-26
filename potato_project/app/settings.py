@@ -49,7 +49,7 @@ CUSTOM_USER_APPS = [
     "dj_rest_auth",
     "dj_rest_auth.registration",
     # django-allauth
-    "allauth",
+    # "allauth",
     # "allauth.account",
     "allauth.socialaccount",
     "allauth.socialaccount.providers.github",
