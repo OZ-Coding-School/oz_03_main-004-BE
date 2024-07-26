@@ -1,48 +1,107 @@
-from rest_framework import generics, status
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
-from django.utils import timezone
-from django.db.models import Count, Case, When, IntegerField
 from datetime import datetime, timedelta
+
+from django.db.models import Count, Q
+from django.utils import timezone
+from rest_framework import generics, permissions, status
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+
 from .models import Todo
-from .serializers import TodoSerializer
+from .serializers import TodoCreateSerializer, TodoSerializer
+
+# ... (IsAuthenticated, TodayTodoListView, MonthlyCompletionRateView는 동일)
 
 
-class TodoListCreateView(generics.ListCreateAPIView):
-    serializer_class = TodoSerializer
+# 1. 투두리스트 항목 생성 (UI에서 입력 받은 데이터 + 선택된 날짜로 생성)
+class TodoCreateView(generics.CreateAPIView):
+    serializer_class = TodoCreateSerializer
     permission_classes = [IsAuthenticated]
-
-    def get_queryset(self):
-        date = self.request.query_params.get("date", timezone.now().date())
-        return Todo.objects.filter(user=self.request.user, date__date=date)
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        date_str = self.request.data.get("date")  # 프론트엔드에서 전달된 날짜 문자열
+        try:
+            date = datetime.strptime(date_str, "%Y-%m-%d").date()
+        except (ValueError, TypeError):
+            return Response(
+                {"error": "Invalid date format or missing date."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        serializer.save(user=self.request.user, date=date)
 
 
-class TodoRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+# 2. 투두리스트 항목 수정 (UI에서 입력 받은 데이터 + 선택된 날짜로 수정)
+class TodoUpdateView(generics.UpdateAPIView):
+    queryset = Todo.objects.all()
     serializer_class = TodoSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return Todo.objects.filter(user=self.request.user)
+        return super().get_queryset().filter(user=self.request.user)
+
+    def perform_update(self, serializer):
+        date_str = self.request.data.get("date")
+        try:
+            date = datetime.strptime(date_str, "%Y-%m-%d").date()
+        except (ValueError, TypeError):
+            return Response(
+                {"error": "Invalid date format or missing date."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        serializer.save(date=date)
 
 
+# 3. 투두리스트 항목 삭제
+class TodoDeleteView(generics.DestroyAPIView):
+    queryset = Todo.objects.all()
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return super().get_queryset().filter(user=self.request.user)
+
+
+# 4. 투두리스트 is_done True<->False
 class TodoToggleView(generics.UpdateAPIView):
-    serializer_class = TodoSerializer
+    queryset = Todo.objects.all()
     permission_classes = [IsAuthenticated]
+    serializer_class = TodoSerializer  # 기존 TodoSerializer 사용
 
     def get_queryset(self):
-        return Todo.objects.filter(user=self.request.user)
+        return super().get_queryset().filter(user=self.request.user)
 
-    def update(self, request, *args, **kwargs):
-        instance = self.get_object()
+    def perform_update(self, serializer):
+        instance = serializer.instance
         instance.is_done = not instance.is_done
         instance.save()
-        serializer = self.get_serializer(instance)
-        return Response(serializer.data)
 
 
+# 5. 오늘 날짜 투두리스트 조회
+class TodayTodoListView(generics.ListAPIView):
+    serializer_class = TodoSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        today = timezone.now().date()
+        return Todo.objects.filter(user=self.request.user, date__date=today)
+
+
+# 6. 해당 날짜 투두리스트 조회 (캘린더에서 선택한 날짜 기준)
+class DailyTodoListView(generics.ListAPIView):
+    serializer_class = TodoSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        date_str = self.kwargs["date"]
+        try:
+            date = datetime.strptime(date_str, "%Y-%m-%d").date()
+        except ValueError:
+            return Todo.objects.none()  # 유효하지 않은 날짜면 빈 쿼리셋 반환
+
+        return Todo.objects.filter(user=self.request.user, date__date=date)
+
+
+# 7. 월별 투두리스트 완료율 조회
 class MonthlyCompletionRateView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
 
@@ -54,15 +113,13 @@ class MonthlyCompletionRateView(generics.ListAPIView):
             days=1
         )
 
+        todos = Todo.objects.filter(
+            user=request.user, date__range=(start_date, end_date)
+        )
+
         daily_rates = (
-            Todo.objects.filter(user=request.user, date__range=(start_date, end_date))
-            .values("date__date")
-            .annotate(
-                total=Count("id"),
-                completed=Count(
-                    Case(When(is_done=True, then=1), output_field=IntegerField())
-                ),
-            )
+            todos.values("date__date")
+            .annotate(total=Count("id"), completed=Count(Q(is_done=True)))
             .order_by("date__date")
         )
 
@@ -76,12 +133,3 @@ class MonthlyCompletionRateView(generics.ListAPIView):
         }
 
         return Response(rates)
-
-
-class TodayTodoListView(generics.ListAPIView):
-    serializer_class = TodoSerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_queryset(self):
-        today = timezone.now().date()
-        return Todo.objects.filter(user=self.request.user, date__date=today)

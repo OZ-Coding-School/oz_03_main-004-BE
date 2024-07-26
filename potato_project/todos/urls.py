@@ -1,20 +1,24 @@
-# urls.py
 from django.urls import path
-from . import views
 
+from .views import (
+    DailyTodoListView,
+    MonthlyCompletionRateView,
+    TodayTodoListView,
+    TodoCreateView,
+    TodoDeleteView,
+    TodoToggleView,
+    TodoUpdateView,
+)
 
 urlpatterns = [
-    path("", views.TodayTodoListView.as_view(), name="today_todo_list"),
-    path("list/", views.TodoListCreateView.as_view(), name="todo_list_create"),
+    path("todos/create/", TodoCreateView.as_view()),
+    path("todos/<int:pk>/update/", TodoUpdateView.as_view()),
+    path("todos/<int:pk>/delete/", TodoDeleteView.as_view()),
+    path("todos/<int:pk>/toggle/", TodoToggleView.as_view(), name="todo-toggle"),
+    path("todos/today/", TodayTodoListView.as_view()),
+    path("todos/<str:date>/", DailyTodoListView.as_view()),  # 'YYYY-MM-DD' 형식
     path(
-        "detail/<int:pk>/",
-        views.TodoRetrieveUpdateDestroyView.as_view(),
-        name="todo_detail",
-    ),
-    path("toggle/<int:pk>/", views.TodoToggleView.as_view(), name="todo_toggle"),
-    path(
-        "monthly-rate/<int:year>/<int:month>/",
-        views.MonthlyCompletionRateView.as_view(),
-        name="monthly_completion_rate",
+        "todos/completion_rate/<int:year>/<int:month>/",
+        MonthlyCompletionRateView.as_view(),
     ),
 ]
