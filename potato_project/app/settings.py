@@ -11,18 +11,6 @@ load_dotenv()
 # 기본 경로 설정
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# # 비밀 키 파일 경로 및 설정
-# KEY_FILE_PATH = os.path.join(BASE_DIR, "key_file.txt")
-# if os.path.exists(KEY_FILE_PATH):
-
-#     def load_key():
-#         with open(KEY_FILE_PATH, "rb") as key_file:
-#             return key_file.read()
-
-#     FERNET_KEY = load_key()
-# else:
-#     raise RuntimeError("key file이 없습니다.")
-
 # Django 비밀 키 및 디버그 설정
 SECRET_KEY = os.environ.get("SECRET_KEY")
 DEBUG = os.environ.get("DEBUG") == "True"
