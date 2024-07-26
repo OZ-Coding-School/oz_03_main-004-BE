@@ -1,6 +1,7 @@
 from django.urls import path
-from .views import GithubCommitsView
+
+from . import views
 
 urlpatterns = [
-    path("commits/", GithubCommitsView.as_view(), name="get_commit_data"),
+    path("", views.GithubCommitsView.as_view(), name="github_commits"),
 ]
