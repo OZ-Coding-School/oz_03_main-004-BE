@@ -1,6 +1,7 @@
 import json
 import os
 from json.decoder import JSONDecodeError
+
 import requests
 from allauth.socialaccount.models import SocialAccount
 from allauth.socialaccount.providers.github import views as github_view
@@ -11,8 +12,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import DatabaseError, IntegrityError
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect
-from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
 
 # .env 파일에서 환경 변수 로드 (python-dotenv 라이브러리 필요)
 from dotenv import load_dotenv
@@ -249,6 +248,7 @@ class UserDetail(APIView):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
+
 class UpdateBaekjoonIDView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -265,4 +265,3 @@ class UpdateBaekjoonIDView(APIView):
         request.user.save()
 
         return Response({"status": "success"}, status=status.HTTP_200_OK)
-
