@@ -117,9 +117,11 @@ def github_callback(request):
             username=username,
             profile_url=user_json.get("avatar_url"),
             github_id=user_json.get("login"),
+            nickname=user_json.get("login"),
         )
 
     # 프로필 이미지 업데이트
+    # 깃허브 액세스토큰 업데이트
     user.profile_url = user_json.get("avatar_url", user.profile_url)
     user.github_access_token = access_token
     user.save()
@@ -202,6 +204,7 @@ class GithubLogin(SocialLoginView):
                     "pk": user.pk,
                     "username": user.username,
                     "profile_url": user.profile_url,
+                    "nickname": user.nickname,
                 },
             }
             return JsonResponse(response_data)
@@ -252,16 +255,38 @@ class UserDetail(APIView):
 class UpdateBaekjoonIDView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def post(self, request):
-        bj_id = request.data.get("baekjoon_id")
-
-        if not bj_id:
+    def put(self, request):
+        new_baekjoon_id = request.data.get("baekjoon_id")
+        if not new_baekjoon_id:
             return Response(
                 {"status": "error", "message": "백준 아이디를 입력해주세요."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        request.user.baekjoon_id = bj_id
+        # 필요하다면 백준 아이디 유효성 검사 로직 추가 (예: 길이, 형식 등)
+
+        request.user.baekjoon_id = new_baekjoon_id
+        request.user.save()
+
+        return Response({"status": "success"}, status=status.HTTP_200_OK)
+
+
+class UserNicknameUpdateView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def put(self, request):
+        new_nickname = request.data.get("nickname")
+        if not new_nickname:
+            return Response(
+                {"status": "error", "message": "닉네임을 입력해주세요."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # 닉네임 unique 설정시
+        # if User.objects.filter(nickname=new_nickname).exclude(pk=request.user.pk).exists():
+        #     return Response({"status": "error", "message": "이미 사용 중인 닉네임입니다."}, status=status.HTTP_400_BAD_REQUEST)
+
+        request.user.nickname = new_nickname
         request.user.save()
 
         return Response({"status": "success"}, status=status.HTTP_200_OK)

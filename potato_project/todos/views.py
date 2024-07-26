@@ -62,18 +62,30 @@ class TodoDeleteView(generics.DestroyAPIView):
 
 
 # 4. 투두리스트 is_done True<->False
-class TodoToggleView(generics.UpdateAPIView):
+class TodoMarkDoneView(generics.UpdateAPIView):
     queryset = Todo.objects.all()
     permission_classes = [IsAuthenticated]
-    serializer_class = TodoSerializer  # 기존 TodoSerializer 사용
+    serializer_class = TodoSerializer
 
     def get_queryset(self):
         return super().get_queryset().filter(user=self.request.user)
 
     def perform_update(self, serializer):
-        instance = serializer.instance
-        instance.is_done = not instance.is_done
-        instance.save()
+        serializer.instance.is_done = True  # O 버튼 클릭 시 is_done을 True로 변경
+        serializer.instance.save()
+
+
+class TodoMarkUndoneView(generics.UpdateAPIView):
+    queryset = Todo.objects.all()
+    permission_classes = [IsAuthenticated]
+    serializer_class = TodoSerializer
+
+    def get_queryset(self):
+        return super().get_queryset().filter(user=self.request.user)
+
+    def perform_update(self, serializer):
+        serializer.instance.is_done = False  # X 버튼 클릭 시 is_done을 False로 변경
+        serializer.instance.save()
 
 
 # 5. 오늘 날짜 투두리스트 조회
@@ -86,7 +98,7 @@ class TodayTodoListView(generics.ListAPIView):
         return Todo.objects.filter(user=self.request.user, date__date=today)
 
 
-# 6. 해당 날짜 투두리스트 조회 (캘린더에서 선택한 날짜 기준)
+# 6. 특정 날짜 투두리스트 조회 (캘린더에서 선택한 날짜 기준)
 class DailyTodoListView(generics.ListAPIView):
     serializer_class = TodoSerializer
     permission_classes = [IsAuthenticated]

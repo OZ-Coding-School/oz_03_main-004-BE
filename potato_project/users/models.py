@@ -39,9 +39,8 @@ class User(AbstractBaseUser, PermissionsMixin, TimeStampedModel):
     # 프로필 관련 필드
     profile_url = models.CharField(max_length=255, null=True)
     github_id = models.CharField(max_length=255, null=True)
-    baekjoon_id = models.CharField(
-        max_length=255, null=True, default=""
-    )  # 백준 아이디 필드 추가
+    baekjoon_id = models.CharField(max_length=255, null=True, default="")
+    nickname = models.CharField(max_length=255, null=False)
 
     # 감자 관련 필드
     potato_level = models.PositiveIntegerField(null=False, default=0)
