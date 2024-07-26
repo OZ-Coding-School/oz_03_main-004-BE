@@ -10,4 +10,5 @@ urlpatterns = [
         name="user_stack_create",
     ),
     path("patch/", views.UserStackPatch.as_view(), name="user_stack_patch"),
+    path("delete/", views.UserStackDelete.as_view(), name="user_stack_delete"),
 ]

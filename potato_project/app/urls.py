@@ -10,6 +10,7 @@ urlpatterns = [
     path("baekjoons/", include("baekjoons.urls")),
     path("attendances/", include("attendances.urls")),
     path("potatoes/", include("potatoes.urls")),
+    path("potatoes/", include("potato_types.urls")),
     path("stacks/", include("stacks.urls")),
     path("stacks/", include("user_stacks.urls")),
     path("todos/", include("todos.urls")),

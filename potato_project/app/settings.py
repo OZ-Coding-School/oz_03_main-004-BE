@@ -62,7 +62,7 @@ CUSTOM_USER_APPS = [
     "dj_rest_auth.registration",
     # django-allauth
     "allauth",
-    "allauth.account",
+    # "allauth.account",
     "allauth.socialaccount",
     "allauth.socialaccount.providers.github",
 ]
@@ -202,3 +202,10 @@ SOCIALACCOUNT_PROVIDERS = {
 SOCIALACCOUNT_LOGIN_ON_GET = True
 # LOGIN_REDIRECT_URL = "main"
 # ACCOUNT_LOGOUT_REDIRECT_URL = "index"
+
+ACCOUNT_EMAIL_REQUIRED = False
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_AUTHENTICATION_METHOD = "username"
+ACCOUNT_EMAIL_VERIFICATION = "none"
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
