@@ -29,7 +29,7 @@ load_dotenv()  # .env 파일 로드
 
 
 state = os.environ.get("STATE")
-BASE_URL = "13.124.88.91:8000/"  # 프론트엔드 URL로 변경해야 함
+BASE_URL = "http://13.124.88.91:8000/"  # 프론트엔드 URL로 변경해야 함
 GITHUB_CALLBACK_URI = BASE_URL + "accounts/github/callback/"
 
 
