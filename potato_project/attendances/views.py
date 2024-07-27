@@ -2,11 +2,12 @@
 from django.utils import timezone
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
-from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from users.models import User
+
 from .models import Attendance
 from .serializers import AttendanceSerializer
-from users.models import User
 
 
 class AttendanceViewSet(viewsets.ViewSet):
@@ -39,9 +40,7 @@ class AttendanceViewSet(viewsets.ViewSet):
         # 출석날짜가 오늘이면 이미 출석함을 반환
         attendance = self.get_user_attendance(user)
         if attendance and attendance.date == today:
-            return Response(
-                {"오늘은 출석을 이미 하셨어요!"}, status=status.HTTP_400_BAD_REQUEST
-            )
+            return Response({"오늘은 출석을 이미 하셨어요!"}, status=status.HTTP_400_BAD_REQUEST)
 
         # 새로운 출석 기록 생성
         new_attendance = Attendance.objects.create(
@@ -72,6 +71,4 @@ class AttendanceViewSet(viewsets.ViewSet):
         user.save()
 
         # 성공 응답 반환
-        return Response(
-            {"message": "물건을 구매했습니다.", "total_coins": user.total_coins}
-        )
+        return Response({"message": "물건을 구매했습니다.", "total_coins": user.total_coins})
