@@ -1,6 +1,7 @@
-from django.test import TestCase, Client
+from unittest.mock import Mock, patch
+
+from django.test import Client, TestCase
 from django.urls import reverse
-from unittest.mock import patch, Mock
 from users.models import User
 
 

@@ -1,8 +1,8 @@
 from django.contrib.auth.models import User
-from django.utils import timezone
 from django.test import TestCase
-from rest_framework.test import APIClient
+from django.utils import timezone
 from rest_framework import status
+from rest_framework.test import APIClient
 
 from .models import Attendance
 
