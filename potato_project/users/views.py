@@ -12,7 +12,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import DatabaseError, IntegrityError
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect
-
 # .env 파일에서 환경 변수 로드 (python-dotenv 라이브러리 필요)
 from dotenv import load_dotenv
 from rest_framework import status
