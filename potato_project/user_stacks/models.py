@@ -5,8 +5,10 @@ from users.models import User
 
 
 class UserStack(TimeStampedModel):
-    user_id = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="유저아이디")
-    stack_id = models.ForeignKey(Stack, on_delete=models.CASCADE, verbose_name="스택아이디")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="유저아이디")
+    stack = models.ForeignKey(
+        Stack, on_delete=models.CASCADE, verbose_name="스택아이디"
+    )
 
     def __str__(self):
         return (
