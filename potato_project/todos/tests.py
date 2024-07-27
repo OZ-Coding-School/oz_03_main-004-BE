@@ -1,9 +1,11 @@
+import json
+
+from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
+
 from .models import Todo
-from django.contrib.auth.models import User
-import json
 
 
 class TodoAPITestCase(TestCase):
