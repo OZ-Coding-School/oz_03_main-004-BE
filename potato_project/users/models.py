@@ -37,6 +37,7 @@ class User(AbstractBaseUser, PermissionsMixin, TimeStampedModel):
     github_access_token = models.CharField(max_length=255, null=True, blank=True)
 
     # 프로필 관련 필드
+    email = models.CharField(max_length=255, null=True, default="")
     profile_url = models.CharField(max_length=255, null=True)
     github_id = models.CharField(max_length=255, null=True)
     baekjoon_id = models.CharField(max_length=255, null=True, default="")
