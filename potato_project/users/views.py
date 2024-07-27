@@ -36,7 +36,7 @@ GITHUB_CALLBACK_URI = BASE_URL + "accounts/github/callback/"
 def github_login(request):
     client_id = os.environ.get("SOCIAL_AUTH_GITHUB_CLIENT_ID")
     return redirect(
-        f"https://github.com/login/oauth/authorize?client_id={client_id}&redirect_uri={GITHUB_CALLBACK_URI}&scope=user:email"
+        f"https://github.com/login/oauth/authorize?client_id={client_id}&redirect_uri={GITHUB_CALLBACK_URI}"
     )
 
 
