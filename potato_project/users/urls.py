@@ -9,6 +9,9 @@ urlpatterns = [
         views.GithubLogin.as_view(),
         name="github_login_todjango",
     ),
+    path(
+        "token/refresh/", views.CustomTokenRefreshView.as_view(), name="token_refresh"
+    ),
     path("profile/", views.UserDetail.as_view(), name="user_detail"),
     path(
         "update-baekjoon-id/",
