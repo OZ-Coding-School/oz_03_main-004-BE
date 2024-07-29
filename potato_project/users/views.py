@@ -7,6 +7,7 @@ from allauth.socialaccount.models import SocialAccount
 from allauth.socialaccount.providers.github import views as github_view
 from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 from dj_rest_auth.registration.views import SocialLoginView
+from dj_rest_auth.views import TokenRefreshView
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import DatabaseError, IntegrityError
@@ -20,6 +21,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 from rest_framework_simplejwt.tokens import RefreshToken
 from users.models import User
 
@@ -114,7 +116,7 @@ def github_callback(request):
     try:
         user = User.objects.get(username=username)
     except User.DoesNotExist:
-        user = User.objects.create_user(
+        user = User.objects.create_user(  # UserManager의 create_user 메서드 호출
             username=username,
             profile_url=user_json.get("avatar_url"),
             github_id=user_json.get("login"),
@@ -216,6 +218,34 @@ class GithubLogin(SocialLoginView):
     코드 간소화 가능
     -> SocialAccount 모델을 사용하지 않고 직접 User 모델에 GitHub 정보를 저장하는 방식
     """
+
+
+class CustomTokenRefreshView(TokenRefreshView):
+    def post(self, request, *args, **kwargs):
+        try:
+            refresh_token = RefreshToken(request.data.get("refresh"))
+        except TokenError:
+            return Response(
+                {"error": "Invalid or expired refresh token"},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        new_access_token = refresh_token.access_token
+
+        if not refresh_token.is_valid("refresh"):  # 리프레시 토큰 만료 검사
+            return Response(
+                {"error": "Expired refresh token. Please login again."},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        refresh_token.blacklist()  # 이전 리프레시 토큰 블랙리스트 처리
+
+        response_data = {
+            "access_token": str(new_access_token),
+            "refresh_token": str(refresh_token),
+        }
+
+        return Response(response_data, status=status.HTTP_200_OK)
 
 
 # 유저 프로필 정보 조회
