@@ -5,6 +5,8 @@ from django.contrib.auth.models import (
     PermissionsMixin,
 )
 from django.db import models
+from potato_types.models import PotatoType
+from potatoes.models import Potato
 
 
 class UserManager(BaseUserManager):
@@ -14,7 +16,20 @@ class UserManager(BaseUserManager):
             raise ValueError("The username must be provided")
 
         user = self.model(username=username, **extra_fields)
+        user.set_unusable_password()
         user.save()
+
+        # 감자 생성 로직 추가
+        potato_types = PotatoType.objects.all()
+        for potato_type in potato_types:
+            is_acquired = potato_type.id == 1  # potato_type_id가 1이면 True
+            is_selected = potato_type.id == 1  # potato_type_id가 1이면 True
+            Potato.objects.create(
+                user=user,
+                potato_type_id=potato_type,
+                is_acquired=is_acquired,
+                is_selected=is_selected,
+            )
 
         return user
 
