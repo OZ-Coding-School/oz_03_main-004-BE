@@ -1,6 +1,5 @@
 from django.contrib import messages
 from potatoes.models import Potato
-from users.models import User
 
 from .models import PotatoType
 
