@@ -110,7 +110,6 @@ DATABASES = {
         "ENGINE": "django.db.backends.postgresql",
         "HOST": os.environ.get("DB_HOST"),
         "NAME": os.environ.get("DB_NAME"),
-        
         "USER": os.environ.get("DB_USER"),
         "PASSWORD": os.environ.get("DB_PASSWORD"),
     }
@@ -118,9 +117,7 @@ DATABASES = {
 
 # 비밀번호 검증 설정
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"
-    },
+    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
     {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
