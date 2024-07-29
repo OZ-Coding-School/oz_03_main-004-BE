@@ -10,7 +10,7 @@ class UserStack(TimeStampedModel):
 
     def __str__(self):
         return (
-            f"{self.user_id.username} - {self.stack_id}"
-            if f"{self.user_id.username} - {self.stack_id}"
+            f"{self.user.username} - {self.stack}"
+            if f"{self.user.username} - {self.stack}"
             else "배워가는 감자에요"
         )
