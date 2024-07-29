@@ -9,8 +9,6 @@ from rest_framework.response import Response
 from .models import Todo
 from .serializers import TodoCreateSerializer, TodoSerializer
 
-# ... (IsAuthenticated, TodayTodoListView, MonthlyCompletionRateView는 동일)
-
 
 # 1. 투두리스트 항목 생성 (UI에서 입력 받은 데이터 + 선택된 날짜로 생성)
 class TodoCreateView(generics.CreateAPIView):
@@ -113,8 +111,8 @@ class DailyTodoListView(generics.ListAPIView):
         return Todo.objects.filter(user=self.request.user, date__date=date)
 
 
-# 7. 월별 투두리스트 완료율 조회
-class MonthlyCompletionRateView(generics.ListAPIView):
+# 7. 월별 투두리스트 완료 개수 조회
+class MonthlyCompletedTodosView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
 
     def list(self, request, *args, **kwargs):
@@ -126,22 +124,21 @@ class MonthlyCompletionRateView(generics.ListAPIView):
         )
 
         todos = Todo.objects.filter(
-            user=request.user, date__range=(start_date, end_date)
+            user=request.user, date__range=(start_date, end_date), is_done=True
         )
 
-        daily_rates = (
+        daily_completed_counts = (
             todos.values("date__date")
-            .annotate(total=Count("id"), completed=Count(Q(is_done=True)))
+            .annotate(completed_count=Count("id"))
             .order_by("date__date")
         )
 
-        rates = {
-            str(item["date__date"]): (
-                round(item["completed"] / item["total"] * 100, 2)
-                if item["total"] > 0
-                else 0
-            )
-            for item in daily_rates
+        completed_counts = {
+            "user_id": request.user.id,
+            "completed_todos": {
+                str(item["date__date"]): item["completed_count"]
+                for item in daily_completed_counts
+            },
         }
 
-        return Response(rates)
+        return Response(completed_counts)
