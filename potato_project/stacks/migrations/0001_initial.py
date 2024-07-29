@@ -51,9 +51,7 @@ def add_initial_stacks(apps, schema_editor):
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('stacks', '0001_initial'),
-    ]
+    dependencies = []
 
     operations = [
         migrations.RunPython(add_initial_stacks),
