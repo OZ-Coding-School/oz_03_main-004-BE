@@ -26,7 +26,7 @@ class UserManager(BaseUserManager):
             is_selected = potato_type.id == 1  # potato_type_id가 1이면 True
             Potato.objects.create(
                 user=user,
-                potato_type_id=potato_type,
+                potato_type_id=potato_type.id,
                 is_acquired=is_acquired,
                 is_selected=is_selected,
             )
@@ -35,7 +35,7 @@ class UserManager(BaseUserManager):
 
     # 슈퍼 유저 생성 함수
     def create_superuser(self, username, password, **extra_fields):
-        user = self.create_user(username, **extra_fields)
+        user = self.model(username=username, **extra_fields)
 
         user.is_superuser = True
         user.is_staff = True
