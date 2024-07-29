@@ -2,6 +2,19 @@
 
 from django.db import migrations, models
 
+def insert_initial_data(apps, schema_editor):
+    PotatoType = apps.get_model('potato_types', 'PotatoType')
+    PotatoType.objects.create(potato_name="levelOnePotato", potato_description="Can be obtained after level 1.")
+    PotatoType.objects.create(potato_name="levelTwoPotato", potato_description="Can be obtained after level 2.")
+    PotatoType.objects.create(potato_name="levelThreePotato", potato_description="Can be obtained after level 3.")
+    PotatoType.objects.create(potato_name="levelFourPotato", potato_description="Can be obtained after level 4.")
+    PotatoType.objects.create(potato_name="levelFivePotato", potato_description="Can be obtained after level 5.")
+    PotatoType.objects.create(potato_name="winterPotato", potato_description="Can be obtained by committing on Christmas Day.")
+    PotatoType.objects.create(potato_name="ghostPotato", potato_description="Can be obtained by committing on Halloween.")
+    PotatoType.objects.create(potato_name="crystalPotato", potato_description="Can be obtained by committing consecutively for a month.")
+    PotatoType.objects.create(potato_name="dirtyPotato", potato_description="Can be obtained if there are no commits for a month.")
+    PotatoType.objects.create(potato_name="greenPotato", potato_description="Can be obtained if there are no commits for 3 months.")
+    PotatoType.objects.create(potato_name="shPotato", potato_description="?")
 
 class Migration(migrations.Migration):
 
@@ -33,4 +46,5 @@ class Migration(migrations.Migration):
                 ("potato_description", models.TextField(verbose_name="감자설명")),
             ],
         ),
+        migrations.RunPython(insert_initial_data),
     ]
