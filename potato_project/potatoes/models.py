@@ -10,3 +10,6 @@ class Potato(TimeStampedModel):
     potato_type = models.ForeignKey(PotatoType, on_delete=models.CASCADE)
     is_acquired = models.BooleanField(blank=True, null=True)
     is_selected = models.BooleanField(blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.user.nickname} - {self.potato_type.potato_name}"
