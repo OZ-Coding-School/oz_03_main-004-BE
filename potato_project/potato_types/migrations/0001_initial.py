@@ -2,7 +2,7 @@
 
 from django.db import migrations, models
 
-def insert_initial_data(apps, schema_editor):
+def insert_initial_data(potato_types, schema_editor):
     PotatoType = apps.get_model('potato_types', 'PotatoType')
     PotatoType.objects.create(potato_name="levelOnePotato", potato_description="Can be obtained after level 1.")
     PotatoType.objects.create(potato_name="levelTwoPotato", potato_description="Can be obtained after level 2.")

@@ -52,7 +52,7 @@ def add_initial_stacks(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('your_app_name', '0001_initial'),
+        ('stacks', '0001_initial'),
     ]
 
     operations = [
