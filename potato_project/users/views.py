@@ -117,7 +117,7 @@ def github_callback(request):
     try:
         user = User.objects.get(username=username)
     except User.DoesNotExist:
-        user = User.objects.create_user(  # UserManager의 create_user 메서드 호출
+        user = User.objects.create_user(
             username=username,
             profile_url=user_json.get("avatar_url"),
             github_id=user_json.get("login"),
