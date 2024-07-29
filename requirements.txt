@@ -9,6 +9,7 @@ python-dotenv >=1.0.1
 djangorestframework-simplejwt
 django-allauth
 dj-rest-auth
+django-rest-framework-simplejwt
 
 requests
 requests-oauthlib
