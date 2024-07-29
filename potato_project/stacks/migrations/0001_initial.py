@@ -1,7 +1,7 @@
 from django.db import migrations
 
 def add_initial_stacks(apps, schema_editor):
-    Stack = apps.get_model('your_app_name', 'Stack')
+    Stack = apps.get_model('stacks', 'Stack')
     stacks = [
         # 프로그래밍 언어
         "Python", "Java", "JavaScript", "TypeScript", "C++", "C#", "Ruby", "Go", "Rust", "Swift",
