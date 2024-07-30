@@ -104,6 +104,7 @@ TEMPLATES = [
 # WSGI 애플리케이션 설정
 WSGI_APPLICATION = "app.wsgi.application"
 
+
 # 데이터베이스 설정
 DATABASES = {
     "default": {
@@ -152,6 +153,7 @@ SIMPLE_JWT = {
     "ROTATE_REFRESH_TOKENS": False,  # 리프레시 토큰 순환 사용 여부
     "BLACKLIST_AFTER_ROTATION": False,  # 순환 사용 시 이전 리프레시 토큰 블랙리스트 등록 여부
     "AUTH_HEADER_TYPES": ("Bearer",),  # 인증 헤더 타입
+    "UPDATE_LAST_LOGIN": True,
 }
 
 REST_AUTH = {
@@ -171,8 +173,8 @@ STATE = os.environ.get("STATE")
 #             "client_id": os.environ.get("SOCIAL_AUTH_GITHUB_CLIENT_ID"),
 #             "secret": os.environ.get("SOCIAL_AUTH_GITHUB_SECRET"),
 #             "key": "",
-#         }
-#     }
+#         },
+#     },
 # }
 
 SOCIALACCOUNT_PROVIDERS = {
@@ -186,5 +188,5 @@ SOCIALACCOUNT_PROVIDERS = {
 }
 
 SOCIALACCOUNT_LOGIN_ON_GET = True
-# LOGIN_REDIRECT_URL = "main"
-# ACCOUNT_LOGOUT_REDIRECT_URL = "index"
+LOGIN_REDIRECT_URL = "https://d3hcv7ngm54uy8.cloudfront.net/oauth-callback"
+ACCOUNT_LOGOUT_REDIRECT_URL = "https://d3hcv7ngm54uy8.cloudfront.net/landing"

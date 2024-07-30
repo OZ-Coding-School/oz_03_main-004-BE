@@ -11,10 +11,10 @@ def add_new_potato(modeladmin, request, queryset):
         messages.error(request, "새로운 감자 종류를 선택해주세요.")
         return
 
-    for user in User.objects.all():
+    for user in User.objects.filter(is_superuser=False):
         Potato.objects.create(
             user=user,
-            potato_type_id=new_potato_type,
+            potato_type_id=new_potato_type.id,
             is_acquired=False,
             is_selected=False,
         )
