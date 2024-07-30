@@ -2,6 +2,7 @@
 
 from django.db import migrations, models
 
+
 class Migration(migrations.Migration):
 
     initial = True
@@ -31,9 +32,5 @@ class Migration(migrations.Migration):
                 ),
                 ("potato_description", models.TextField(verbose_name="감자설명")),
             ],
-            options={
-                "verbose_name": "PotatoType",
-                "verbose_name_plural": "PotatoTypes",
-            },
         ),
     ]

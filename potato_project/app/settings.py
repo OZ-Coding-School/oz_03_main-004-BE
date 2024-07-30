@@ -104,15 +104,26 @@ TEMPLATES = [
 # WSGI 애플리케이션 설정
 WSGI_APPLICATION = "app.wsgi.application"
 
+# # 데이터베이스 설정
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.postgresql",
+#         "HOST": os.environ.get("RDS_HOSTNAME"),
+#         "NAME": os.environ.get("RDS_DB_NAME"),
+#         "USER": os.environ.get("RDS_USERNAME"),
+#         "PASSWORD": os.environ.get("RDS_PASSWORD"),
+#         "PORT": os.environ.get("RDS_PORT", 5432),
+#     }
+# }
+
 # 데이터베이스 설정
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "HOST": os.environ.get("RDS_HOSTNAME"),
-        "NAME": os.environ.get("RDS_DB_NAME"),
-        "USER": os.environ.get("RDS_USERNAME"),
-        "PASSWORD": os.environ.get("RDS_PASSWORD"),
-        "PORT": os.environ.get("RDS_PORT", 5432),
+        "HOST": os.environ.get("DB_HOST"),
+        "NAME": os.environ.get("DB_NAME"),
+        "USER": os.environ.get("DB_USER"),
+        "PASSWORD": os.environ.get("DB_PASSWORD"),
     }
 }
 
@@ -155,6 +166,7 @@ SIMPLE_JWT = {
     "ROTATE_REFRESH_TOKENS": False,  # 리프레시 토큰 순환 사용 여부
     "BLACKLIST_AFTER_ROTATION": False,  # 순환 사용 시 이전 리프레시 토큰 블랙리스트 등록 여부
     "AUTH_HEADER_TYPES": ("Bearer",),  # 인증 헤더 타입
+    "UPDATE_LAST_LOGIN": True,
 }
 
 REST_AUTH = {
@@ -174,8 +186,8 @@ STATE = os.environ.get("STATE")
 #             "client_id": os.environ.get("SOCIAL_AUTH_GITHUB_CLIENT_ID"),
 #             "secret": os.environ.get("SOCIAL_AUTH_GITHUB_SECRET"),
 #             "key": "",
-#         }
-#     }
+#         },
+#     },
 # }
 
 SOCIALACCOUNT_PROVIDERS = {
@@ -189,5 +201,5 @@ SOCIALACCOUNT_PROVIDERS = {
 }
 
 SOCIALACCOUNT_LOGIN_ON_GET = True
-LOGIN_REDIRECT_URL = "http://43.202.0.144:8000/home"
-ACCOUNT_LOGOUT_REDIRECT_URL = "http://43.202.0.144:8000/landing"
+LOGIN_REDIRECT_URL = "https://d3hcv7ngm54uy8.cloudfront.net/oauth-callback"
+ACCOUNT_LOGOUT_REDIRECT_URL = "https://d3hcv7ngm54uy8.cloudfront.net/landing"
