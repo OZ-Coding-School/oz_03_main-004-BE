@@ -14,14 +14,17 @@ class TestGitHubAPIService(unittest.TestCase):
     # @patch 문법은 unittest.mock 모듈에서 지원하는 문법
     # request.get을 모킹한다.
     # 커밋을 얻어오는 지 테스트한다.
-    @patch('.views.requests.get')
+    @patch('githubs.views.requests.get')
     def test_get_commits(self, mock_get): # 데코레이터로 생성한 Mock 객체를 mock_get 
+        # 설정
         mock_response = mock_get.return_value
         mock_response.status_code = 200
         mock_response.json.return_value = [{"commit": "data"}]
 
+        # 실행
         commits = self.github_service.get_commits(self.repo)
 
+        # 검증
         self.assertEqual(commits, [{"commit": "data"}])
         mock_get.assert_called_once_with(
             f"https://api.github.com/repos/{self.repo}/commits",
@@ -31,7 +34,7 @@ class TestGitHubAPIService(unittest.TestCase):
             }
         )
 
-    @patch('mymodule.requests.get')
+    @patch('githubs.views.requests.get')
     def test_get_repos(self, mock_get):
         # 설정
         mock_response = mock_get.return_value
@@ -51,7 +54,7 @@ class TestGitHubAPIService(unittest.TestCase):
             }
         )
 
-    @patch('mymodule.requests.get')
+    @patch('githubs.views.requests.get')
     def test_get_total_commits(self, mock_get):
         # 설정
         mock_response = mock_get.return_value
@@ -71,7 +74,7 @@ class TestGitHubAPIService(unittest.TestCase):
             }
         )
 
-    @patch('mymodule.requests.get')
+    @patch('githubs.views.requests.get')
     def test_get_commits_error(self, mock_get):
         # 설정
         mock_response = mock_get.return_value
@@ -84,7 +87,7 @@ class TestGitHubAPIService(unittest.TestCase):
         self.assertIsNone(commits)
         self.assertEqual(status_code, 404)
 
-    @patch('mymodule.requests.get')
+    @patch('githubs.views.requests.get')
     def test_get_repos_error(self, mock_get):
         # 설정
         mock_response = mock_get.return_value
@@ -97,7 +100,7 @@ class TestGitHubAPIService(unittest.TestCase):
         self.assertIsNone(repos)
         self.assertEqual(status_code, 404)
 
-    @patch('mymodule.requests.get')
+    @patch('githubs.views.requests.get')
     def test_get_total_commits_error(self, mock_get):
         # 설정
         mock_response = mock_get.return_value
