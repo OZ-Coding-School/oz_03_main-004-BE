@@ -1,8 +1,12 @@
 import unittest
-from datetime import date
-from unittest.mock import patch
+from datetime import date, datetime, timedelta
+from unittest.mock import Mock, patch
 
-from django.test import TestCase  # 트랜잭션으로 데이터를 되돌리기 때문에 DB에 영향을 주지 않는다.
+from django.test import TestCase
+from django.urls import reverse
+from django.utils import timezone
+from rest_framework import status
+from rest_framework.test import APIClient
 from users.models import User
 
 from .views import GitHubAPIService, GitHubDatabaseService
@@ -122,6 +126,7 @@ class TestGitHubAPIService(unittest.TestCase):
         self.assertEqual(status_code, 404)
 
 
+# 데이터베이스에 커밋과 날짜가 저장되는 지 확인하는 함수
 class TestGitHubDataBaseService(TestCase):
     @patch("githubs.models.Github.objects.update_or_create")
     def test_update_or_create_commit_record(self, mock_update_or_create):
@@ -139,6 +144,89 @@ class TestGitHubDataBaseService(TestCase):
         mock_update_or_create.assert_called_once_with(
             user=user, date=commit_date, defaults={"commit_num": commit_count}
         )
+
+
+class GithubCommitsViewTest(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.user = User.objects.create_user(
+            username="testuser", password="testpassword"
+        )
+        self.user.github_access_token = "fake_access_token"
+        self.user.save()
+        self.client.force_authenticate(user=self.user)
+
+    @patch("gihubs.views.GitHubAPIService.get_repos")
+    @patch("gihubs.views.GitHubAPIService.get_commits")
+    @patch("gihubs.views.GitHubAPIService.get_total_commits")
+    @patch("gihubs.views.GitHubDatabaseService.update_or_create_commit_record")
+    def test_get_commits(
+        self,
+        mock_update_or_create,
+        mock_get_total_commits,
+        mock_get_commits,
+        mock_get_repos,
+    ):
+        # Mock get_repos response
+        mock_get_repos.return_value = ([{"full_name": "test/repo"}], 200)
+
+        # Mock get_commits response
+        mock_commit = {
+            "commit": {
+                "author": {
+                    "date": (timezone.now() - timedelta(days=1)).strftime(
+                        "%Y-%m-%dT%H:%M:%SZ"
+                    )
+                }
+            }
+        }
+        mock_get_commits.return_value = ([mock_commit], 200)
+
+        # Mock get_total_commits response
+        mock_get_total_commits.return_value = 42
+
+        # Make the request
+        response = self.client.get(reverse("github_commits"))
+
+        # Check the response status code
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Check the response data
+        response_data = response.json()
+        self.assertEqual(response_data["today_commit_count"], 0)
+        self.assertEqual(response_data["week_commit_count"], 1)
+        self.assertEqual(response_data["total_commit_count"], 42)
+        self.assertEqual(response_data["week_average_commit_count"], round(1 / 7, 2))
+
+        # Check that the update_or_create_commit_record was called correctly
+        mock_update_or_create.assert_called_once_with(
+            self.user, 0, timezone.now().date()
+        )
+
+    @patch("gihubs.views.GitHubAPIService.get_repos")
+    def test_get_commits_no_token(self, mock_get_repos):
+        # Remove the access token
+        self.user.github_access_token = ""
+        self.user.save()
+
+        # Make the request
+        response = self.client.get(reverse("github_commits"))
+
+        # Check the response status code
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(response.json(), {"error": "깃허브 액세스 토큰이 없습니다."})
+
+    @patch("gihubs.views.GitHubAPIService.get_repos")
+    def test_get_commits_failed_repos_request(self, mock_get_repos):
+        # Mock get_repos to return an error
+        mock_get_repos.return_value = (None, 404)
+
+        # Make the request
+        response = self.client.get(reverse("github_commits"))
+
+        # Check the response status code
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.json(), {"error": "커밋 요청을 실패했습니다."})
 
 
 if __name__ == "__main__":
