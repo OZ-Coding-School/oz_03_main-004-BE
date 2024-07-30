@@ -1,8 +1,15 @@
 from django.urls import path
 
-from .views import (DailyTodoListView, MonthlyCompletionRateView,
-                    TodayTodoListView, TodoCreateView, TodoDeleteView,
-                    TodoMarkDoneView, TodoMarkUndoneView, TodoUpdateView)
+from .views import (
+    DailyTodoListView,
+    MonthlyCompletedTodosView,
+    TodayTodoListView,
+    TodoCreateView,
+    TodoDeleteView,
+    TodoMarkDoneView,
+    TodoMarkUndoneView,
+    TodoUpdateView,
+)
 
 urlpatterns = [
     path("create/", TodoCreateView.as_view()),
@@ -15,7 +22,7 @@ urlpatterns = [
     path("today/", TodayTodoListView.as_view()),
     path("<str:date>/", DailyTodoListView.as_view()),  # 'YYYY-MM-DD' 형식
     path(
-        "completion_rate/<int:year>/<int:month>/",
-        MonthlyCompletionRateView.as_view(),
+        "completed/<int:year>/<int:month>/",
+        MonthlyCompletedTodosView.as_view(),
     ),
 ]
