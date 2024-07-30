@@ -104,6 +104,17 @@ TEMPLATES = [
 # WSGI 애플리케이션 설정
 WSGI_APPLICATION = "app.wsgi.application"
 
+# # 데이터베이스 설정
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.postgresql",
+#         "HOST": os.environ.get("RDS_HOSTNAME"),
+#         "NAME": os.environ.get("RDS_DB_NAME"),
+#         "USER": os.environ.get("RDS_USERNAME"),
+#         "PASSWORD": os.environ.get("RDS_PASSWORD"),
+#         "PORT": os.environ.get("RDS_PORT", 5432),
+#     }
+# }
 
 # 데이터베이스 설정
 DATABASES = {
