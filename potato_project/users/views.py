@@ -7,8 +7,8 @@ from allauth.socialaccount.models import SocialAccount
 from allauth.socialaccount.providers.github import views as github_view
 from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 from dj_rest_auth.registration.views import SocialLoginView
-from dj_rest_auth.views import TokenRefreshView
 from django.conf import settings
+from django.contrib.auth import logout
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import DatabaseError, IntegrityError
 from django.http import HttpResponse, JsonResponse
@@ -23,6 +23,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.views import TokenRefreshView
 from users.models import User
 
 from .serializers import UserSerializer
@@ -31,15 +32,15 @@ load_dotenv()  # .env 파일 로드
 
 
 state = os.environ.get("STATE")
-BASE_URL = "http://43.201.150.178:8000/"
-# BASE_URL = "http://localhost:8000/"  # 프론트엔드 URL로 변경해야 함
+# BASE_URL = "http://43.201.150.178:8000/"
+BASE_URL = "http://localhost:8000/"  # 프론트엔드 URL로 변경해야 함
 GITHUB_CALLBACK_URI = BASE_URL + "accounts/github/callback/"
 
 
 def github_login(request):
     client_id = os.environ.get("SOCIAL_AUTH_GITHUB_CLIENT_ID")
     return redirect(
-        f"https://github.com/login/oauth/authorize?client_id={client_id}&redirect_uri={GITHUB_CALLBACK_URI}"
+        f"https://github.com/login/oauth/authorize?client_id={client_id}&redirect_uri={GITHUB_CALLBACK_URI}&scope=user:email"
     )
 
 
@@ -116,7 +117,7 @@ def github_callback(request):
     try:
         user = User.objects.get(username=username)
     except User.DoesNotExist:
-        user = User.objects.create_user(  # UserManager의 create_user 메서드 호출
+        user = User.objects.create_user(
             username=username,
             profile_url=user_json.get("avatar_url"),
             github_id=user_json.get("login"),
@@ -210,6 +211,7 @@ class GithubLogin(SocialLoginView):
                     "nickname": user.nickname,
                 },
             }
+            # return redirect(settings.LOGIN_REDIRECT_URL)
             return JsonResponse(response_data)
         return response
 
@@ -220,6 +222,7 @@ class GithubLogin(SocialLoginView):
     """
 
 
+# 리프레시토큰으로 새 엑세스토큰 발급
 class CustomTokenRefreshView(TokenRefreshView):
     def post(self, request, *args, **kwargs):
         try:
@@ -240,12 +243,38 @@ class CustomTokenRefreshView(TokenRefreshView):
 
         refresh_token.blacklist()  # 이전 리프레시 토큰 블랙리스트 처리
 
-        response_data = {
-            "access_token": str(new_access_token),
-            "refresh_token": str(refresh_token),
-        }
+        new_access_token = str(refresh_token.access_token)
+        new_refresh_token = str(RefreshToken.for_user(request.user))
 
-        return Response(response_data, status=status.HTTP_200_OK)
+        response = Response(
+            {"message": "Token refresh successful"}, status=status.HTTP_200_OK
+        )
+
+        # 액세스 토큰을 쿠키에 설정
+        response.set_cookie(
+            "access_token",
+            new_access_token,
+            httponly=True,
+            secure=True,
+            samesite="Lax",
+        )
+
+        # 리프레시 토큰을 쿠키에 설정
+        response.set_cookie(
+            "refresh_token",
+            new_refresh_token,
+            httponly=True,
+            secure=True,
+            samesite="Lax",
+        )
+
+        return response
+
+
+# 로그아웃 후 랜딩 페이지로 이동
+def logout_view(request):
+    logout(request)
+    return redirect(settings.LOGOUT_REDIRECT_URL)
 
 
 # 유저 프로필 정보 조회
