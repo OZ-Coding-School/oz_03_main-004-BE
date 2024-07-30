@@ -12,9 +12,10 @@ urlpatterns = [
     path(
         "token/refresh/", views.CustomTokenRefreshView.as_view(), name="token_refresh"
     ),
+    path("logout/", views.logout_view, name="logout"),
     path("profile/", views.UserDetail.as_view(), name="user_detail"),
     path(
-        "update-baekjoon-id/",
+        "baekjoon_id/",
         views.UpdateBaekjoonIDView.as_view(),
         name="update-baekjoon-id",
     ),
