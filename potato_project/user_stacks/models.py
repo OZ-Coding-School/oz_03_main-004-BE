@@ -6,9 +6,7 @@ from users.models import User
 
 class UserStack(TimeStampedModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="유저아이디")
-    stack = models.ForeignKey(
-        Stack, on_delete=models.CASCADE, verbose_name="스택아이디"
-    )
+    stack = models.ForeignKey(Stack, on_delete=models.CASCADE, verbose_name="스택아이디")
 
     def __str__(self):
         return (
