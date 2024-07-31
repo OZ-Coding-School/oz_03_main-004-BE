@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 
 from django.db.models import Count, Q
+from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from rest_framework import generics, permissions, status
 from rest_framework.permissions import IsAuthenticated
@@ -18,7 +19,12 @@ class TodoCreateView(generics.CreateAPIView):
     def perform_create(self, serializer):
         date_str = self.request.data.get("date")  # 프론트엔드에서 전달된 날짜 문자열
         try:
-            date = datetime.strptime(date_str, "%Y-%m-%d").date()
+            # datetime 객체 생성 (시간은 00:00:00으로 설정)
+            date_obj = datetime.strptime(date_str, "%Y-%m-%d").replace(
+                hour=0, minute=0, second=0, microsecond=0
+            )
+            # timezone-aware datetime 객체로 변환
+            date = timezone.make_aware(date_obj)
         except (ValueError, TypeError):
             return Response(
                 {"error": "Invalid date format or missing date."},
@@ -30,9 +36,12 @@ class TodoCreateView(generics.CreateAPIView):
 
 # 2. 투두리스트 항목 수정 (UI에서 입력 받은 데이터 + 선택된 날짜로 수정)
 class TodoUpdateView(generics.UpdateAPIView):
-    queryset = Todo.objects.all()
     serializer_class = TodoSerializer
     permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        todo_id = self.kwargs.get("id")
+        return get_object_or_404(Todo, id=todo_id, user=self.request.user)
 
     def get_queryset(self):
         return super().get_queryset().filter(user=self.request.user)
@@ -40,7 +49,12 @@ class TodoUpdateView(generics.UpdateAPIView):
     def perform_update(self, serializer):
         date_str = self.request.data.get("date")
         try:
-            date = datetime.strptime(date_str, "%Y-%m-%d").date()
+            # datetime 객체 생성 (시간은 00:00:00으로 설정)
+            date_obj = datetime.strptime(date_str, "%Y-%m-%d").replace(
+                hour=0, minute=0, second=0, microsecond=0
+            )
+            # timezone-aware datetime 객체로 변환
+            date = timezone.make_aware(date_obj)
         except (ValueError, TypeError):
             return Response(
                 {"error": "Invalid date format or missing date."},
@@ -52,8 +66,11 @@ class TodoUpdateView(generics.UpdateAPIView):
 
 # 3. 투두리스트 항목 삭제
 class TodoDeleteView(generics.DestroyAPIView):
-    queryset = Todo.objects.all()
     permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        todo_id = self.kwargs.get("id")
+        return get_object_or_404(Todo, id=todo_id, user=self.request.user)
 
     def get_queryset(self):
         return super().get_queryset().filter(user=self.request.user)
@@ -61,9 +78,13 @@ class TodoDeleteView(generics.DestroyAPIView):
 
 # 4. 투두리스트 is_done True<->False
 class TodoMarkDoneView(generics.UpdateAPIView):
-    queryset = Todo.objects.all()
     permission_classes = [IsAuthenticated]
     serializer_class = TodoSerializer
+    http_method_names = ["patch"]  # PATCH 메서드만 허용
+
+    def get_object(self):
+        todo_id = self.kwargs.get("id")
+        return get_object_or_404(Todo, id=todo_id, user=self.request.user)
 
     def get_queryset(self):
         return super().get_queryset().filter(user=self.request.user)
@@ -74,9 +95,13 @@ class TodoMarkDoneView(generics.UpdateAPIView):
 
 
 class TodoMarkUndoneView(generics.UpdateAPIView):
-    queryset = Todo.objects.all()
     permission_classes = [IsAuthenticated]
     serializer_class = TodoSerializer
+    http_method_names = ["patch"]  # PATCH 메서드만 허용
+
+    def get_object(self):
+        todo_id = self.kwargs.get("id")
+        return get_object_or_404(Todo, id=todo_id, user=self.request.user)
 
     def get_queryset(self):
         return super().get_queryset().filter(user=self.request.user)
@@ -92,7 +117,7 @@ class TodayTodoListView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        today = timezone.now().date()
+        today = timezone.localtime(timezone.now()).date()
         return Todo.objects.filter(user=self.request.user, date__date=today)
 
 
