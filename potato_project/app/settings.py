@@ -143,7 +143,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # 국제화 설정
 LANGUAGE_CODE = "en-us"
-TIME_ZONE = "UTC"
+TIME_ZONE = "Asia/Seoul"
 USE_I18N = True
 USE_TZ = True
 
@@ -201,9 +201,10 @@ SOCIALACCOUNT_PROVIDERS = {
             "repo",
             "read:org",
         ],
+        "ON_DELETE": "CASCADE",
     }
 }
 
 SOCIALACCOUNT_LOGIN_ON_GET = True
-LOGIN_REDIRECT_URL = "https://d3hcv7ngm54uy8.cloudfront.net/oauth-callback"
-ACCOUNT_LOGOUT_REDIRECT_URL = "https://d3hcv7ngm54uy8.cloudfront.net/landing"
+LOGIN_REDIRECT_URL = "/oauth-callback/"
+ACCOUNT_LOGOUT_REDIRECT_URL = "/landing/"
