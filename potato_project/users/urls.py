@@ -19,4 +19,9 @@ urlpatterns = [
         views.UpdateBaekjoonIDView.as_view(),
         name="update-baekjoon-id",
     ),
+    path(
+        "nickname/",
+        views.UserNicknameUpdateView.as_view(),
+        name="update-nickname",
+    ),
 ]

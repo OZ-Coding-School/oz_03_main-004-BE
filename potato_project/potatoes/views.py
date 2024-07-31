@@ -56,52 +56,24 @@ class PotatoSelectPatch(APIView):
 
     def patch(self, request):
         try:
-            potato = Potato.objects.filter(
-                user=request.user, data=request.data, partial=True
-            )  # request.user 사용
+            potato_id = request.data.get("id")
+            potato = Potato.objects.get(id=potato_id, user=request.user)
 
-            if not potato.exists():
+            if not potato:
                 return Response(
                     {"detail": "Not found"}, status=status.HTTP_404_NOT_FOUND
                 )
 
-            if "is_selected" not in request.data:
-                return Response(
-                    {"detail": "is_selected field is required"},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
+            # 기존에 선택된 감자의 is_selected 값을 False로 변경
+            Potato.objects.filter(user=request.user).update(is_selected=False)
+            # 현재 선택된 감자의 is_selected 값을 True로 변경
+            potato.is_selected = True  # 객체 속성 직접 변경
+            potato.save()  # 변경 사항 저장
 
-            is_selected = request.data["is_selected"]
-            if is_selected:
-                # 유저가 가지고 있는 모든 감자의 is_selected 값을 False로
-                Potato.objects.filter(user=request.user).update(is_selected=False)
+            serializer = PotatoSerializer(potato)  # 업데이트된 객체 다시 가져오기
+            return Response(serializer.data)
 
-            # 유저가 선택한 감자의 is_selected 값을 True로
-            serializer = PotatoSerializer(
-                potato.first(), data={"is_selected": is_selected}, partial=True
-            )
-
-            if serializer.is_valid():
-                serializer.save()
-                return Response(serializer.data)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-        except DatabaseError as e:
-            return Response(
-                {"error": "Database error occurred"},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            )
-        except ValidationError as e:
-            return Response(
-                {"error": "Serialization error occurred", "details": e.detail},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-        except ObjectDoesNotExist as e:
-            return Response(
-                {"error": "Object does not exist", "details": str(e)},
-                status=status.HTTP_404_NOT_FOUND,
-            )
-        except Exception as e:
+        except Exception as e:  # Exception handling remains the same
             return Response(
                 {"error": "An unexpected error occurred", "details": str(e)},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,

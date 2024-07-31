@@ -10,7 +10,7 @@ urlpatterns = [
         name="user_stack_create",
     ),
     path(
-        "delete/<int:stack_id>/",
+        "delete/<int:user_stack_id>/",
         views.UserStackDelete.as_view(),
         name="user_stack_delete",
     ),
