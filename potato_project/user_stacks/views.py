@@ -21,12 +21,24 @@ class UserStackList(APIView):
 class UserStackCreate(APIView):
     permission_classes = [IsAuthenticated]
 
-    def post(self, request):  # user_id 매개변수 제거
-        serializer = UserStackSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save(user=request.user)  # request.user 사용
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def post(self, request):
+        stack_id = request.data.get("stack_id")  # stack_id 받아오기
+
+        if not stack_id:
+            return Response(
+                {"error": "stack_id is required"}, status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            user_stack = UserStack.objects.create(user=request.user, stack_id=stack_id)
+            return Response(
+                {"message": "UserStack created", "id": user_stack.id},
+                status=status.HTTP_201_CREATED,
+            )
+        except Exception as e:
+            return Response(
+                {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 
 # # 유저 스택 업데이트
@@ -58,9 +70,9 @@ class UserStackCreate(APIView):
 class UserStackDelete(APIView):
     permission_classes = [IsAuthenticated]
 
-    def delete(self, request, stack_id):
+    def delete(self, request, user_stack_id):
         try:
-            stack = UserStack.objects.get(user=request.user, id=stack_id)
+            stack = UserStack.objects.get(user=request.user, id=user_stack_id)
         except UserStack.DoesNotExist:
             return Response(
                 {"error": "Stack not found for this user"},
