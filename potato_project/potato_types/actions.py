@@ -19,6 +19,4 @@ def add_new_potato(modeladmin, request, queryset):
             is_selected=False,
         )
 
-    messages.success(
-        request, f"모든 유저에게 '{new_potato_type.potato_name}' 감자가 추가되었습니다."
-    )
+    messages.success(request, f"모든 유저에게 '{new_potato_type.potato_name}' 감자가 추가되었습니다.")
