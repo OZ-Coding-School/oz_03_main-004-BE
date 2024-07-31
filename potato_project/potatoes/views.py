@@ -10,7 +10,6 @@ from .models import Potato
 from .serializers import PotatoSerializer
 
 
-# 유저의 포테이토가 다가지고있지, 획득을 못햇던 햇던, 유저가감자를 획득했는지, 대표이미지 설정했는지.
 # 유저의 감자 조회
 class MyPotatoDetail(APIView):
     permission_classes = [IsAuthenticated]
