@@ -7,7 +7,7 @@ class UserSerializer(ModelSerializer):
     class Meta:
         model = User
         fields = [
-            "user_id",
+            "id",
             "username",
             "profile_url",
             "github_id",
