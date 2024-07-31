@@ -24,7 +24,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "name",
-                    models.CharField(max_length=20, null=True, verbose_name="스택명"),
+                    models.CharField(max_length=255, null=True, verbose_name="스택명"),
                 ),
             ],
         ),
