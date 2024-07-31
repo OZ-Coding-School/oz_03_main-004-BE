@@ -10,7 +10,10 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ("potatoes", "0001_initial"),
-        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
+        (
+            "users",
+            "__first__",
+        ),  # users 앱의 첫 번째 마이그레이션 파일을 dependency로 추가
     ]
 
     operations = [
