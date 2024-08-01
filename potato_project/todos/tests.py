@@ -1,64 +1,34 @@
-import json
+from datetime import datetime
 
-from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
+from rest_framework import status
+from rest_framework.test import APIClient
+from users.models import User
 
 from .models import Todo
 
 
-class TodoAPITestCase(TestCase):
+class TodoCreateViewTests(TestCase):
     def setUp(self):
-        self.user = User.objects.create_user(username="testuser", password="testpass")
-        self.todo = Todo.objects.create(
-            user_id=self.user, task="Test Task", is_done=False, date=timezone.now()
-        )
+        self.client = APIClient()
+        self.user = User.objects.create_user(username="testuser", nickname="testpotato")
+        self.client.force_authenticate(user=self.user)
+        self.url = reverse("todo-create")
 
-    def test_create_todo(self):
-        data = {
-            "user_id": self.user.id,
-            "task": "New Task",
-            "is_done": False,
-            "date": timezone.now().strftime("%Y-%m-%dT%H:%M:%S"),
-        }
-        response = self.client.post(
-            reverse("todo-list-create"),
-            data=json.dumps(data),
-            content_type="application/json",
-        )
-        self.assertEqual(response.status_code, 201)
-        self.assertEqual(Todo.objects.count(), 2)
+    def test_create_todo_success(self):
+        data = {"task": "Test Task", "date": "2024-09-01"}
+        response = self.client.post(self.url, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        todo_id = response.data.get("id")
+        self.assertIsNotNone(todo_id, "Todo ID should be in the response")
+        todo = Todo.objects.get(id=todo_id)
+        self.assertEqual(todo.task, "Test Task")
+        self.assertEqual(str(todo.date), "2024-09-01")
 
-    def test_get_todo_list(self):
-        response = self.client.get(reverse("todo-list-create"))
-        self.assertEqual(response.status_code, 200)
-        data = response.json()
-        self.assertEqual(len(data["todos"]), 1)
-
-    def test_get_todo_detail(self):
-        response = self.client.get(reverse("todo-detail", args=[self.todo.id]))
-        self.assertEqual(response.status_code, 200)
-        data = response.json()
-        self.assertEqual(data["task"], "Test Task")
-
-    def test_update_todo(self):
-        data = {
-            "task": "Updated Task",
-            "is_done": True,
-            "date": timezone.now().strftime("%Y-%m-%dT%H:%M:%S"),
-        }
-        response = self.client.put(
-            reverse("todo-detail", args=[self.todo.id]),
-            data=json.dumps(data),
-            content_type="application/json",
-        )
-        self.assertEqual(response.status_code, 200)
-        self.todo.refresh_from_db()
-        self.assertEqual(self.todo.task, "Updated Task")
-        self.assertTrue(self.todo.is_done)
-
-    def test_delete_todo(self):
-        response = self.client.delete(reverse("todo-detail", args=[self.todo.id]))
-        self.assertEqual(response.status_code, 204)
-        self.assertEqual(Todo.objects.count(), 0)
+    def test_create_todo_invalid_date(self):
+        data = {"task": "Test Task", "date": "invalid-date"}
+        response = self.client.post(self.url, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("error", response.data)
