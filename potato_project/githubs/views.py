@@ -28,7 +28,7 @@ class GitHubAPIService:
         response = requests.get(github_api_url, headers=headers)
 
         if response.status_code == 200:
-            return response.json(), 200##
+            return response.json(), 200  ##
         else:
             return None, response.status_code
 
@@ -42,7 +42,7 @@ class GitHubAPIService:
         response = requests.get(github_api_url, headers=headers)
 
         if response.status_code == 200:
-            return response.json(), 200##
+            return response.json(), 200  ##
         else:
             return None, response.status_code
 
@@ -50,7 +50,7 @@ class GitHubAPIService:
         github_api_url = f"https://api.github.com/search/commits?q=author:{username}"
         headers = {
             "Authorization": f"token {self.access_token}",
-            "Accept": "application/vnd.github.v3+json", 
+            "Accept": "application/vnd.github.v3+json",
         }
 
         response = requests.get(github_api_url, headers=headers)
@@ -90,7 +90,7 @@ class GithubCommitsView(APIView):
         week_ago = today - timedelta(days=7)
 
         # 레포지토리 목록 조회
-        repos, status_code = github_service.get_repos(user.username)##
+        repos, status_code = github_service.get_repos(user.username)  ##
 
         if repos is not None:
             # 오늘, 7일간 커밋 수 계산
@@ -98,7 +98,7 @@ class GithubCommitsView(APIView):
             week_commit_count = 0
 
             for repo in repos:
-                commits, _ = github_service.get_commits(repo["full_name"])##
+                commits, _ = github_service.get_commits(repo["full_name"])  ##
                 if commits is not None:
                     for commit in commits:
                         commit_date = datetime.strptime(
@@ -144,12 +144,9 @@ class GithubCommitsView(APIView):
                 "week_average_commit_count": week_average_commit_count,
                 "level": user.potato_level,
                 "exp": user.exp,
-                "next_level_exp": next_level_exp, 
+                "next_level_exp": next_level_exp,
             }
-
 
             return JsonResponse(commit_statistics, safe=False)
         else:
             return Response({"error": "커밋 요청을 실패했습니다."}, status=status_code)
-
-

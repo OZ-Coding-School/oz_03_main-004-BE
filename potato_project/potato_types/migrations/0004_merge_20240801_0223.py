@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("potato_types", "0002_add_initial_data"),
         ("potato_types", "0003_remove_potatotype_potato_image"),
