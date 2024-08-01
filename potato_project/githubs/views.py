@@ -28,7 +28,7 @@ class GitHubAPIService:
         response = requests.get(github_api_url, headers=headers)
 
         if response.status_code == 200:
-            return response.json()
+            return response.json(), 200##
         else:
             return None, response.status_code
 
@@ -42,7 +42,7 @@ class GitHubAPIService:
         response = requests.get(github_api_url, headers=headers)
 
         if response.status_code == 200:
-            return response.json()
+            return response.json(), 200##
         else:
             return None, response.status_code
 
@@ -50,14 +50,14 @@ class GitHubAPIService:
         github_api_url = f"https://api.github.com/search/commits?q=author:{username}"
         headers = {
             "Authorization": f"token {self.access_token}",
-            "Accept": "application/vnd.github.v3+json",
+            "Accept": "application/vnd.github.v3+json", 
         }
 
         response = requests.get(github_api_url, headers=headers)
 
         if response.status_code == 200:
             data = response.json()
-            return data["total_count"]
+            return data["total_count"], 200
         else:
             return None, response.status_code
 
@@ -90,7 +90,7 @@ class GithubCommitsView(APIView):
         week_ago = today - timedelta(days=7)
 
         # 레포지토리 목록 조회
-        repos, status_code = github_service.get_repos(user.username)
+        repos, status_code = github_service.get_repos(user.username)##
 
         if repos is not None:
             # 오늘, 7일간 커밋 수 계산
@@ -98,7 +98,7 @@ class GithubCommitsView(APIView):
             week_commit_count = 0
 
             for repo in repos:
-                commits, _ = github_service.get_commits(repo["full_name"])
+                commits, _ = github_service.get_commits(repo["full_name"])##
                 if commits is not None:
                     for commit in commits:
                         commit_date = datetime.strptime(
@@ -112,8 +112,8 @@ class GithubCommitsView(APIView):
             # 7일 평균 커밋 수 계산
             week_average_commit_count = round(week_commit_count / 7, 2)
 
-            # 총 커밋 수 가져오기 (get_total_commits 사용)
-            total_commit_count = github_service.get_total_commits(user.username)
+            # 총 커밋 수 가져오기 (get_total_commits 사용)##
+            total_commit_count, _ = github_service.get_total_commits(user.username)
 
             # 오늘 커밋 수 데이터베이스에 저장
             db_service = GitHubDatabaseService()
@@ -126,15 +126,15 @@ class GithubCommitsView(APIView):
                 ]
                 or 0
             )
-            level_up_threshold = 50 * 1.5**user.level
+            level_up_threshold = 50 * 1.5**user.potato_level
             while user.exp >= level_up_threshold:
-                user.level += 1
+                user.potato_level += 1
                 user.exp -= level_up_threshold
-                level_up_threshold = 50 * 1.5**user.level
+                level_up_threshold = 50 * 1.5**user.potato_level
             user.save()
 
             # 다음 레벨까지 필요한 경험치 계산
-            next_level_exp = 50 * 1.5**user.level - user.exp
+            next_level_exp = 50 * 1.5**user.potato_level - user.exp
 
             # 응답 데이터 생성
             commit_statistics = {
@@ -142,11 +142,14 @@ class GithubCommitsView(APIView):
                 "week_commit_count": week_commit_count,
                 "total_commit_count": total_commit_count,
                 "week_average_commit_count": week_average_commit_count,
-                "level": user.level,
+                "level": user.potato_level,
                 "exp": user.exp,
-                "next_level_exp": next_level_exp,  # 다음 레벨까지 필요한 경험치 추가
+                "next_level_exp": next_level_exp, 
             }
+
 
             return JsonResponse(commit_statistics, safe=False)
         else:
             return Response({"error": "커밋 요청을 실패했습니다."}, status=status_code)
+
+
