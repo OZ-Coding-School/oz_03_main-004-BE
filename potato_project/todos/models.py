@@ -8,7 +8,7 @@ class Todo(TimeStampedModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     task = models.CharField(max_length=50)
     is_done = models.BooleanField(default=False)
-    date = models.DateTimeField()
+    date = models.DateField()
 
     def __str__(self):
         return self.task
