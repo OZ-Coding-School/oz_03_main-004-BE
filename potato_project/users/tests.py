@@ -2,11 +2,12 @@ from django.contrib.auth.models import User
 from django.test import RequestFactory, TestCase
 from django.urls import reverse
 from rest_framework import status
-from rest_framework.test import APIClient, APITestCase, force_authenticate
+from rest_framework.test import APIClient, force_authenticate
 from users.models import User
-from users.views import UpdateBaekjoonIDView, UserDetail
+from users.views import UserDetail
 
 
+# 테스트할 url이 존재하지 않아서, RequestFactory로 테스트 생성
 class UserDetailTests(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
@@ -30,9 +31,7 @@ class UpdateBaekjoonIDViewTests(TestCase):
         self.user = User.objects.create_user(
             username="testuser", password="password", nickname="testpotato"
         )
-        self.url = reverse(
-            "update-baekjoon-id"
-        )  # 'update_baekjoon_id'는 URL 패턴 이름입니다.
+        self.url = reverse("update-baekjoon-id")
 
     def test_update_baekjoon_id_success(self):
         self.client.force_authenticate(user=self.user)
@@ -52,3 +51,29 @@ class UpdateBaekjoonIDViewTests(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data["message"], "백준 아이디를 입력해주세요.")
+
+
+class UserNicknameUpdateViewTests(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.user = User.objects.create_user(username="testuser", nickname="testpotato")
+        self.url = reverse("update-nickname")
+
+    def test_update_nickname_success(self):
+        self.client.force_authenticate(user=self.user)
+        response = self.client.put(
+            self.url,
+            {"nickname": "new_nickname"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.nickname, "new_nickname")
+
+    def test_update_nickname_missing(self):
+        self.client.force_authenticate(user=self.user)
+        response = self.client.put(self.url, {}, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data["message"], "닉네임을 입력해주세요.")
