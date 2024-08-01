@@ -19,19 +19,15 @@ class TodoCreateView(generics.CreateAPIView):
     def perform_create(self, serializer):
         date_str = self.request.data.get("date")  # 프론트엔드에서 전달된 날짜 문자열
         try:
-            # datetime 객체 생성 (시간은 00:00:00으로 설정)
-            date_obj = datetime.strptime(date_str, "%Y-%m-%d").replace(
-                hour=0, minute=0, second=0, microsecond=0
-            )
-            # timezone-aware datetime 객체로 변환
-            date = timezone.make_aware(date_obj)
+            # datetime 객체 생성
+            date_obj = datetime.strptime(date_str, "%Y-%m-%d").date()
         except (ValueError, TypeError):
             return Response(
                 {"error": "Invalid date format or missing date."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        serializer.save(user=self.request.user, date=date)
+        serializer.save(user=self.request.user, date=date_obj)
 
 
 # 2. 투두리스트 항목 수정 (UI에서 입력 받은 데이터 + 선택된 날짜로 수정)
@@ -49,19 +45,15 @@ class TodoUpdateView(generics.UpdateAPIView):
     def perform_update(self, serializer):
         date_str = self.request.data.get("date")
         try:
-            # datetime 객체 생성 (시간은 00:00:00으로 설정)
-            date_obj = datetime.strptime(date_str, "%Y-%m-%d").replace(
-                hour=0, minute=0, second=0, microsecond=0
-            )
-            # timezone-aware datetime 객체로 변환
-            date = timezone.make_aware(date_obj)
+            # datetime 객체 생성
+            date_obj = datetime.strptime(date_str, "%Y-%m-%d").date()
         except (ValueError, TypeError):
             return Response(
                 {"error": "Invalid date format or missing date."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        serializer.save(date=date)
+        serializer.save(date=date_obj)
 
 
 # 3. 투두리스트 항목 삭제
