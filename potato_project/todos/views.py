@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 
 from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404
@@ -110,7 +110,7 @@ class TodayTodoListView(generics.ListAPIView):
 
     def get_queryset(self):
         today = timezone.localtime(timezone.now()).date()
-        return Todo.objects.filter(user=self.request.user, date__date=today)
+        return Todo.objects.filter(user=self.request.user, date=today)
 
 
 # 6. 특정 날짜 투두리스트 조회 (캘린더에서 선택한 날짜 기준)
@@ -125,7 +125,7 @@ class DailyTodoListView(generics.ListAPIView):
         except ValueError:
             return Todo.objects.none()  # 유효하지 않은 날짜면 빈 쿼리셋 반환
 
-        return Todo.objects.filter(user=self.request.user, date__date=date)
+        return Todo.objects.filter(user=self.request.user, date=date)
 
 
 # 7. 월별 투두리스트 완료 개수 조회
@@ -135,25 +135,25 @@ class MonthlyCompletedTodosView(generics.ListAPIView):
     def list(self, request, *args, **kwargs):
         year = self.kwargs["year"]
         month = self.kwargs["month"]
-        start_date = datetime(year, month, 1)
-        end_date = start_date.replace(month=start_date.month + 1, day=1) - timedelta(
-            days=1
-        )
+
+        # DateField를 사용하므로 start_date와 end_date를 date 객체로 생성
+        start_date = date(year, month, 1)
+        # 다음 달 1일에서 하루를 빼서 해당 월의 마지막 날을 계산
+        end_date = date(year, month + 1, 1) - timedelta(days=1)
 
         todos = Todo.objects.filter(
             user=request.user, date__range=(start_date, end_date), is_done=True
         )
 
+        # 날짜별 완료 개수를 계산
         daily_completed_counts = (
-            todos.values("date__date")
-            .annotate(completed_count=Count("id"))
-            .order_by("date__date")
+            todos.values("date").annotate(completed_count=Count("id")).order_by("date")
         )
 
         completed_counts = {
             "user_id": request.user.id,
             "completed_todos": {
-                str(item["date__date"]): item["completed_count"]
+                str(item["date"]): item["completed_count"]
                 for item in daily_completed_counts
             },
         }
