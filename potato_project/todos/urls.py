@@ -10,8 +10,10 @@ urlpatterns = [
     path("<int:id>/delete/", TodoDeleteView.as_view(), name="todo-delete"),
     path("<int:id>/done/", TodoMarkDoneView.as_view(), name="todo-mark-done"),
     path("<int:id>/undone/", TodoMarkUndoneView.as_view(), name="todo-mark-undone"),
-    path("today/", TodayTodoListView.as_view()),
-    path("<str:date>/", DailyTodoListView.as_view()),  # 'YYYY-MM-DD' 형식
+    path("today/", TodayTodoListView.as_view(), name="todo-today"),
+    path(
+        "<str:date>/", DailyTodoListView.as_view(), name="todo-daily"
+    ),  # 'YYYY-MM-DD' 형식
     path(
         "completed/<int:year>/<int:month>/",
         MonthlyCompletedTodosView.as_view(),
