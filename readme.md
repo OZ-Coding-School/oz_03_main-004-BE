@@ -30,4 +30,6 @@ This project is licensed under the MIT License
 ## 연락처
 - 김다연: ekdyd516@gmail.com
 - 노성우: shtjddn0817@gmail.com
-- 주영광: dudrknd1642@gmail.com 
+- 주영광: dudrknd1642@gmail.com
+
+  ## 감자쓰 화이팅 !!!!
