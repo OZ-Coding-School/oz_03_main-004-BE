@@ -17,5 +17,6 @@ urlpatterns = [
     path(
         "completed/<int:year>/<int:month>/",
         MonthlyCompletedTodosView.as_view(),
+        name="todo-monthly",
     ),
 ]
