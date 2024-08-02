@@ -21,32 +21,16 @@
 
 ***
 
-## 1. 개발 환경
-### 개발언어
+## 1. 기술 스택
 <div>
-  <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=JavaScript&logoColor=white"/>
+  <img src="https://img.shields.io/badge/PYTHON-F7DF1E?style=for-the-badge&logo=PYTHON&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Django-20232A?style=for-the-badge&logo=Django&logoColor=61DAFB"/>
+  <img src="https://img.shields.io/badge/PostgreSQL-336791?style=for-the-badge&logo=postgresql&logoColor=white">
+  <img src="https://img.shields.io/badge/DOCKER-06B6D4?style=for-the-badge&logo=DOCKER&logoColor=blue">
 </div>
-
-### 라이브러리
-<div>
-  <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB"/>
-  <img src="https://img.shields.io/badge/Tailwind css-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white">
-</div>
-
-### 상태관리
-<div>
-  <img src="https://img.shields.io/badge/zustand-FF6900?style=for-the-badge">
-</div>
-
-### 버전관리
 <div>
   <img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white">
-</div>
-
-### 배포
-<div>
   <img src="https://img.shields.io/badge/AWS S3-569A31?style=for-the-badge">
-  <img src="https://img.shields.io/badge/AWS EC2-FF9900?style=for-the-badge">
 </div>
 
 ### 협업툴
