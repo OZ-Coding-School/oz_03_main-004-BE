@@ -4,7 +4,6 @@ from users.models import User
 
 
 class Todo(TimeStampedModel):
-    # field이름은 _id를 붙이지 않는게 좋다고하네?
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     task = models.CharField(max_length=50)
     is_done = models.BooleanField(default=False)
