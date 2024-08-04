@@ -30,10 +30,9 @@ from .serializers import UserSerializer
 
 load_dotenv()  # .env 파일 로드
 
-
 state = os.environ.get("STATE")
-# BASE_URL = "http://43.201.150.178:8000/"
-BASE_URL = "http://localhost:8000/"  # 프론트엔드 URL로 변경해야 함
+BASE_URL = "https://api.gitpotatoes.com/"
+# BASE_URL = "http://localhost:8000"
 GITHUB_CALLBACK_URI = BASE_URL + "accounts/github/callback/"
 
 
@@ -98,6 +97,7 @@ def github_callback(request):
         "https://api.github.com/user",
         headers={"Authorization": f"Bearer {access_token}"},
     )
+    user_response.encoding = "utf-8"
     user_json = user_response.json()
 
     # 에러 처리
@@ -181,7 +181,20 @@ def github_callback(request):
         secure=True,
         samesite="Lax",
     )
-    return response
+
+    jwt_access_token = login_data.get("access_token")
+    jwt_refresh_token = login_data.get("refresh_token")
+    user_data = (
+        {
+            "pk": user.pk,
+            "username": user.username,
+            "profile_url": user.profile_url,
+            "nickname": user.nickname,
+        },
+    )
+    redirect_url = f"https://www.gitpotatoes.com/oauth-callback?access_token={jwt_access_token}&refresh_token={jwt_refresh_token}&user={json.dumps(user_data)}"
+    return redirect(redirect_url)
+    # return response
 
 
 class GithubLogin(SocialLoginView):
@@ -211,7 +224,6 @@ class GithubLogin(SocialLoginView):
                     "nickname": user.nickname,
                 },
             }
-            # return redirect(settings.LOGIN_REDIRECT_URL)
             return JsonResponse(response_data)
         return response
 
