@@ -20,14 +20,14 @@ class TodoCreateView(generics.CreateAPIView):
         date_str = self.request.data.get("date")  # 프론트엔드에서 전달된 날짜 문자열
         try:
             # datetime 객체 생성
-            date_obj = datetime.strptime(date_str, "%Y-%m-%d").date()
+            date = datetime.strptime(date_str, "%Y-%m-%d").date()
         except (ValueError, TypeError):
             return Response(
                 {"error": "Invalid date format or missing date."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        serializer.save(user=self.request.user, date=date_obj)
+        serializer.save(user=self.request.user, date=date)
 
 
 # 2. 투두리스트 항목 수정 (UI에서 입력 받은 데이터 + 선택된 날짜로 수정)
@@ -46,14 +46,14 @@ class TodoUpdateView(generics.UpdateAPIView):
         date_str = self.request.data.get("date")
         try:
             # datetime 객체 생성
-            date_obj = datetime.strptime(date_str, "%Y-%m-%d").date()
+            date = datetime.strptime(date_str, "%Y-%m-%d").date()
         except (ValueError, TypeError):
             return Response(
                 {"error": "Invalid date format or missing date."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        serializer.save(date=date_obj)
+        serializer.save(date=date)
 
 
 # 3. 투두리스트 항목 삭제
@@ -93,6 +93,7 @@ class TodoMarkUndoneView(generics.UpdateAPIView):
 
     def get_object(self):
         todo_id = self.kwargs.get("id")
+
         return get_object_or_404(Todo, id=todo_id, user=self.request.user)
 
     def get_queryset(self):
