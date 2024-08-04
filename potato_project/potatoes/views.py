@@ -57,8 +57,8 @@ class PotatoSelectPatch(APIView):
 
     def patch(self, request):
         try:
-            potato_id = request.data.get("id")
-            potato = Potato.objects.get(id=potato_id, user=request.user)
+            potato_type_id = request.data.get("id")
+            potato = Potato.objects.get(potato_type=potato_type_id, user=request.user)
 
             if not potato:
                 return Response(

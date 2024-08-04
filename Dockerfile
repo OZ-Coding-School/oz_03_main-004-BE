@@ -13,35 +13,34 @@ ENV PYTHONUNBUFFERED 1
 # 로컬 파일 시스템의 requirements.txt 파일을 컨테이너의 /tmp/requirements.txt로 복사합니다. 
 # 이 파일은 필요한 Python 패키지들을 명시합니다.
 COPY ./requirements.txt /tmp/requirements.txt
-COPY ./requirements.dev.txt /tmp/requirements.dev.txt
 COPY ./potato_project /app
 WORKDIR /app
 EXPOSE 8000
 
 ARG DEV=false
 
-RUN python -m venv /py && \ 
-    /py/bin/pip install --upgrade pip && \
-    /py/bin/pip install -r /tmp/requirements.txt && \
-    apk add --update --no-cache postgresql-client jpeg-dev &&  \
-    apk add --update --no-cache --virtual .tmp-build-deps \
-        build-base postgresql-dev musl-dev zlib zlib-dev linux-headers && \
-    if [ $DEV = "true" ]; \
-        then /py/bin/pip install -r /tmp/requirements.dev.txt ; \
-    fi && \
-    rm -rf /tmp && \
-    apk del .tmp-build-deps && \
-    adduser \
-        --disabled-password \
-        --no-create-home \
-        django-user
+# 가상 환경 설정 및 패키지 설치
+RUN python -m venv /py
+RUN /py/bin/pip install --upgrade pip
+RUN /py/bin/pip install --no-cache-dir -r /tmp/requirements.txt
 
-ENV PATH="/py/bin:$PATH"
+# 시스템 패키지 설치
+RUN apk add --update --no-cache jpeg-dev
+RUN apk add --update --no-cache --virtual .tmp-build-deps \
+    build-base musl-dev zlib zlib-dev linux-headers \
+    && apk del .tmp-build-deps
 
+# django-user 생성 및 권한 설정
+RUN if ! getent passwd django-user; then adduser -D django-user; fi
+USER root
+RUN chown -R django-user:django-user /py/lib/python3.11/site-packages
 USER django-user
 
-# 이 명령어를 추가하여 pytest를 설치합니다.
-RUN /py/bin/pip install pytest pytest-django
+# 추가 패키지 설치
+ENV PATH="/py/bin:$PATH"
+RUN /py/bin/pip install --no-cache-dir pytest pytest-django django-cors-headers
+
+
 
 
 # 개발용
@@ -89,3 +88,4 @@ RUN /py/bin/pip install pytest pytest-django
 
 # # 이 명령어를 추가하여 pytest를 설치합니다.
 # RUN /py/bin/pip install pytest pytest-django
+

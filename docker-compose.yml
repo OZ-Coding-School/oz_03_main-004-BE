@@ -24,7 +24,8 @@ services:
       - DB_PASSWORD=${DB_PASSWORD}
       - PYDEVD_DISABLE_FILE_VALIDATION=1
     env_file:
-      - .env 
+      - .env
+
 
 
 # 개발용 
@@ -56,7 +57,7 @@ services:
 #       - .env  
 #     depends_on:
 #       - db
-    
+
 
 #   db: # PostgreSQL Database
 #    image: postgres:16-alpine
@@ -68,6 +69,7 @@ services:
 #      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
 #    env_file:
 #       - .env  
+
 
     
 
