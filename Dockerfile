@@ -17,7 +17,7 @@ COPY ./potato_project /app
 WORKDIR /app
 EXPOSE 8000
 
-# ARG DEV=false
+ARG DEV=false
 
 # 가상 환경 설정 및 패키지 설치
 RUN python -m venv /py
@@ -39,6 +39,9 @@ USER django-user
 # 추가 패키지 설치
 ENV PATH="/py/bin:$PATH"
 RUN /py/bin/pip install --no-cache-dir pytest pytest-django django-cors-headers
+
+
+
 
 # 개발용
 
