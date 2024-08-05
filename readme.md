@@ -72,76 +72,181 @@
 
 ## 4. 프로젝트 구조
 ```
-.
-├── README.md
-├── package-lock.json
-├── package.json
-├── src
-│   ├── App.jsx
-│   ├── apis
-│   │   ├── api
-│   │   │   ├── attendance.js
-│   │   │   ├── auth.js
-│   │   │   ├── baekjoon.js
-│   │   │   ├── github.js
-│   │   │   ├── potato.js
-│   │   │   ├── stack.js
-│   │   │   └── todo.js
-│   │   ├── services
-│   │   │   ├── authService.js
-│   │   │   ├── calendarService.js
-│   │   │   ├── levelService.js
-│   │   │   ├── settingPageService.js
-│   │   │   ├── stackService.js
-│   │   │   ├── todoService.js
-│   │   │   └── userUpdateService.js
-│   │   └── utils
-│   │       └── instance.js
-│   ├── assets
-│   │   ├── description.json
-│   │   └── images
-│   ├── components
-│   │   ├── common
-│   │   │   ├── alert
-│   │   │   ├── input
-│   │   │   └── loading
-│   │   ├── layout
-│   │   │   ├── footer
-│   │   │   └── header
-│   │   ├── modal
-│   │   │   ├── BaekjoonConnectModal.jsx
-│   │   │   ├── ChangePotatoModal.jsx
-│   │   │   ├── PotatoInfoModal.jsx
-│   │   │   ├── UserUpdateModal.jsx
-│   │   │   └── index.js
-│   │   └── shared
-│   │       ├── calendar
-│   │       ├── collection
-│   │       ├── info
-│   │       ├── level
-│   │       ├── potato
-│   │       ├── stack
-│   │       └── todo
-│   ├── hooks
-│   │   └── useCalendar
-│   ├── lib
-│   ├── main.jsx
-│   ├── pages
-│   │   ├── home
-│   │   ├── landing
-│   │   ├── oauthCallback
-│   │   ├── setting
-│   │   └── signin
-│   ├── store
-│   │   ├── dateStore.js
-│   │   ├── todosCompleteStore.js
-│   │   └── userStore.js
-│   ├── styles
-│   │   └── global.css
-│   └── utils
-│       └── storage.js
-├── tailwind.config.js
-└── vite.config.js
+potato_project
+├── app
+│   ├── __init__.py
+│   ├── __pycache__
+│   ├── asgi.py
+│   ├── settings.py
+│   ├── urls.py
+│   └── wsgi.py
+├── attendances
+│   ├── __init__.py
+│   ├── __pycache__
+│   ├── admin.py
+│   ├── apps.py
+│   │   ├── 0001_initial.py
+│   │   ├── 0002_initial.py
+│   │   ├── __init__.py
+│   │   └── __pycache__
+│   ├── models.py
+│   ├── serializers.py
+│   ├── tests.py
+│   ├── urls.py
+│   └── views.py
+├── baekjoons
+│   ├── __init__.py
+│   ├── __pycache__
+│   ├── admin.py
+│   ├── apps.py
+│   │   ├── 0001_initial.py
+│   │   ├── 0002_initial.py
+│   │   ├── __init__.py
+│   │   └── __pycache__
+│   ├── models.py
+│   ├── tests.py
+│   ├── urls.py
+│   └── views.py
+├── common
+│   ├── __init__.py
+│   ├── __pycache__
+│   ├── admin.py
+│   ├── apps.py
+│   │   ├── __init__.py
+│   │   └── __pycache__
+│   ├── models.py
+│   ├── tests.py
+│   └── views.py
+├── core
+│   ├── __init__.py
+│   ├── __pycache__
+│   ├── admin.py
+│   ├── apps.py
+│   ├── management
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   └── commands
+│   │       ├── __init__.py
+│   │       ├── __pycache__
+│   │       └── wait_for_db.py
+│   │   ├── __init__.py
+│   │   └── __pycache__
+│   ├── models.py
+│   ├── tests.py
+│   └── views.py
+├── githubs
+│   ├── __init__.py
+│   ├── __pycache__
+│   ├── admin.py
+│   ├── apps.py
+│   │   ├── 0001_initial.py
+│   │   ├── 0002_initial.py
+│   │   ├── 0003_alter_github_date.py
+│   │   ├── __init__.py
+│   │   └── __pycache__
+│   ├── models.py
+│   ├── signals.py
+│   ├── test
+│   │   ├── __init__.py
+│   │   └── tests.py
+│   ├── urls.py
+│   └── views.py
+├── manage.py
+├── potato_types
+│   ├── __init__.py
+│   ├── __pycache__
+│   ├── actions.py
+│   ├── admin.py
+│   ├── apps.py
+│   │   ├── 0001_initial.py
+│   │   ├── 0002_add_initial_data.py
+│   │   ├── 0003_alter_potatotype_options.py
+│   │   ├── 0003_remove_potatotype_potato_image.py
+│   │   ├── 0004_merge_20240730_0318.py
+│   │   ├── __init__.py
+│   │   └── __pycache__
+│   ├── models.py
+│   ├── serializers.py
+│   ├── tests.py
+│   ├── urls.py
+│   └── views.py
+├── potatoes
+│   ├── __init__.py
+│   ├── __pycache__
+│   ├── admin.py
+│   ├── apps.py
+│   │   ├── 0001_initial.py
+│   │   ├── 0002_initial.py
+│   │   ├── 0003_rename_potato_type_id_potato_potato_type.py
+│   │   ├── __init__.py
+│   │   └── __pycache__
+│   ├── models.py
+│   ├── serializers.py
+│   ├── tests.py
+│   ├── urls.py
+│   └── views.py
+├── stacks
+│   ├── __init__.py
+│   ├── __pycache__
+│   ├── admin.py
+│   ├── apps.py
+│   │   ├── 0001_initial.py
+│   │   ├── 0001_initial.py.save
+│   │   ├── 0002_add_initial_stacks.py
+│   │   ├── __init__.py
+│   │   └── __pycache__
+│   ├── models.py
+│   ├── serializers.py
+│   ├── tests.py
+│   ├── urls.py
+│   ├── views.py
+│   └── views.py.save
+├── todos
+│   ├── __init__.py
+│   ├── __pycache__
+│   ├── admin.py
+│   ├── apps.py
+│   │   ├── 0001_initial.py
+│   │   ├── 0002_initial.py
+│   │   ├── 0003_alter_todo_date.py
+│   │   ├── __init__.py
+│   │   └── __pycache__
+│   ├── models.py
+│   ├── serializers.py
+│   ├── tests.py
+│   ├── urls.py
+│   └── views.py
+├── user_stacks
+│   ├── __init__.py
+│   ├── __pycache__
+│   ├── admin.py
+│   ├── apps.py
+│   │   ├── 0001_initial.py
+│   │   ├── 0002_initial.py
+│   │   ├── __init__.py
+│   │   └── __pycache__
+│   ├── models.py
+│   ├── serializers.py
+│   ├── tests.py
+│   ├── urls.py
+│   └── views.py
+└── users
+    ├── __init__.py
+    ├── __pycache__
+    ├── admin.py
+    ├── apps.py
+    │   ├── 0001_initial.py
+    │   ├── 0002_alter_user_potato_level.py
+    │   ├── __init__.py
+    │   └── __pycache__
+    ├── models.py
+    ├── serializers.py
+    ├── signals.py
+    ├── tests.py
+    ├── urls.py
+    ├── views.py
+    ├── views.py.save
+    └── views.py.save.1
 ```
 
 ## 5. 프로젝트
