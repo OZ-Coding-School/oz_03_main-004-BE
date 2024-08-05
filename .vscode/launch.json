@@ -1,0 +1,20 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Remote Attach",
+            "type": "python",
+            "request": "attach",
+            "justMyCode": true,
+            "port": "3000",
+            "host": "0.0.0.0",
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}/potato_project",
+                    "remoteRoot": "/app"
+                }
+            ],
+        }
+    ],
+    "django": true,
+}
