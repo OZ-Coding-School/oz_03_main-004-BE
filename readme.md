@@ -1,4 +1,4 @@
-# Potata Project
+# Potato Project
 GitHub와 백준 활동으로 성장하는 감자 캐릭터를 키우며 생산성을 관리하는 게임형 웹 앱입니다.
 
 ## 목차
