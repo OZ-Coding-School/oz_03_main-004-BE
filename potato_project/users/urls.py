@@ -14,7 +14,7 @@ urlpatterns = [
         views.CustomTokenRefreshView.as_view(),
         name="token_refresh",
     ),
-    path("api/accounts/logout/", views.logout_view, name="logout"),
+    path("api/logout/", views.logout_view, name="logout"),
     path("api/accounts/profile/", views.UserDetail.as_view(), name="user_detail"),
     path(
         "api/accounts/baekjoon_id/",

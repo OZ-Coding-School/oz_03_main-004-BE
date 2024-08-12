@@ -56,7 +56,7 @@ class User(AbstractBaseUser, PermissionsMixin, TimeStampedModel):
     nickname = models.CharField(max_length=255, null=False)
 
     # 감자 관련 필드
-    potato_level = models.PositiveIntegerField(null=False, default=0)
+    potato_level = models.PositiveIntegerField(null=False, default=1)
     potato_exp = models.PositiveIntegerField(null=False, default=0)
     total_coins = models.PositiveIntegerField(default=0)
 

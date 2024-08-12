@@ -2,6 +2,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import DatabaseError
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -11,6 +12,8 @@ from .serializers import StackSerializer
 
 # 전체 스택 조회
 class StackList(APIView):
+    permission_classes = [AllowAny]
+
     def get(self, request):
         try:
             stacks = Stack.objects.all()
