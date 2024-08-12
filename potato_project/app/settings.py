@@ -53,7 +53,9 @@ CUSTOM_USER_APPS = [
     "allauth.account",
     "allauth.socialaccount",
     "allauth.socialaccount.providers.github",
+    "corsheaders",
 ]
+
 
 INSTALLED_APPS = DJANGO_SYSTEM_APPS + CUSTOM_USER_APPS
 
@@ -71,6 +73,7 @@ AUTHENTICATION_BACKENDS = (
 
 # 미들웨어 설정
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -115,6 +118,9 @@ DATABASES = {
         "USER": os.environ.get("RDS_USERNAME"),
         "PASSWORD": os.environ.get("RDS_PASSWORD"),
         "PORT": os.environ.get("RDS_PORT", 5432),
+        "OPTIONS": {
+            "client_encoding": "UTF8",  # UTF-8 문자셋 설정
+        },
     }
 }
 
@@ -205,6 +211,51 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
-SOCIALACCOUNT_LOGIN_ON_GET = True
-LOGIN_REDIRECT_URL = "/oauth-callback/"
-ACCOUNT_LOGOUT_REDIRECT_URL = "/landing/"
+SOCIALACCOUNT_LOGIN_ON_GET = False
+# LOGIN_REDIRECT_URL = "/oauth-callback/"
+# ACCOUNT_LOGOUT_REDIRECT_URL = "/landing/"
+
+DEFAULT_CHARSET = "utf-8"
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "DEBUG",
+    },
+}
+
+# CORS_ORIGIN_WHITELIST = ['http://localhost:5173', 'http://127.0.0.1:5173', 'https://www.gitpotatoes.com',]  # 특정 Origin만 허용
+CORS_ALLOWED_ORIGINS = [
+    "https://www.gitpotatoes.com",  # 실제 배포 프론트엔드 URL
+    #   'http://localhost:5173',  # 프론트엔드 로컬 서버 URL
+    #    'http://127.0.0.1:5173',  # 프론트엔드 로컬 서버 URL
+]
+CORS_ALLOW_CREDENTIALS = True  # 쿠키 등 credential 정보 허용
+CORS_ALLOW_METHODS = [
+    "DELETE",
+    "GET",
+    "OPTIONS",
+    "PATCH",
+    "POST",
+    "PUT",
+]
+CORS_ALLOW_HEADERS = [
+    "accept",
+    "accept-encoding",
+    "authorization",
+    "content-type",
+    "dnt",
+    "origin",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+]
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
