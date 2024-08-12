@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 
+import pytz
 import requests
 from django.db.models import Avg, Sum
 from django.http import JsonResponse
@@ -92,9 +93,17 @@ class GithubCommitsView(APIView):
                 )
                 if commits is not None:
                     for commit in commits:
-                        commit_date = datetime.strptime(
-                            commit["commit"]["author"]["date"], "%Y-%m-%dT%H:%M:%SZ"
-                        ).date()
+                        commit_date = (
+                            timezone.make_aware(
+                                datetime.strptime(
+                                    commit["commit"]["author"]["date"],
+                                    "%Y-%m-%dT%H:%M:%SZ",
+                                ),
+                                timezone=pytz.UTC,
+                            )
+                            .astimezone(timezone.get_current_timezone())
+                            .date()
+                        )
                         if commit_date == today:
                             today_commits += 1
 
@@ -121,6 +130,7 @@ class GithubCommitsView(APIView):
 
             # 경험치 및 레벨 업데이트
             user.potato_exp = total_commits
+            user.potato_level = 1
             level_up_threshold = int(50 * 1.5 ** (user.potato_level - 1))
             while user.potato_exp >= level_up_threshold:
                 user.potato_level += 1
