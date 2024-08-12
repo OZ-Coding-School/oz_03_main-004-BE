@@ -258,3 +258,4 @@ CORS_ALLOW_HEADERS = [
     "x-requested-with",
 ]
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
