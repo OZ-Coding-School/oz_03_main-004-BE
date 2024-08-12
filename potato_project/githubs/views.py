@@ -49,7 +49,7 @@ class GitHubAPIService:
         else:
             return None, response.status_code
 
-
+          
 # 데이터베이스에 커밋과 날짜를 저장하는 함수
 class GitHubDatabaseService:
     @staticmethod
@@ -81,7 +81,7 @@ class GithubCommitsView(APIView):
         week_ago = today - timedelta(days=7)
 
         # 레포지토리 목록 조회
-        repos, status_code = github_service.get_repos(user.username)
+        repos, status_code = github_service.get_repos(user.username)##
 
         if repos is not None:
             # 오늘, 7일간 커밋 수 계산
@@ -157,3 +157,5 @@ class GithubCommitsView(APIView):
             return JsonResponse(commit_statistics, safe=False)
         else:
             return Response({"error": "커밋 요청을 실패했습니다."}, status=status_code)
+
+
