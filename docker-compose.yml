@@ -1,35 +1,6 @@
 # 배포용
 
 # version: "3.11"
-services:
-  app:
-    build:
-      context: .
-      args:
-        - DEV=true
-    ports:
-      - "8000:8000"
-      - "3000:3000" # debugger
-    volumes:
-      - ./potato_project:/app
-    command: >
-      sh -c "python manage.py wait_for_db &&
-             python manage.py makemigrations &&
-             python manage.py migrate &&
-             python manage.py runserver --noreload 0.0.0.0:8000"
-    environment:
-      - DB_HOST=${DB_HOST}
-      - DB_NAME=${DB_NAME}
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - PYDEVD_DISABLE_FILE_VALIDATION=1
-    env_file:
-      - .env 
-
-
-# 개발용 
-
-# # version: "3.11"
 # services:
 #   app:
 #     build:
@@ -44,8 +15,8 @@ services:
 #     command: >
 #       sh -c "python manage.py wait_for_db &&
 #              python manage.py makemigrations &&
-#              python manage.py migrate &&      
-#              python -u manage.py runserver --noreload 0.0.0.0:8000"
+#              python manage.py migrate &&
+#              python manage.py runserver --noreload 0.0.0.0:8000"
 #     environment:
 #       - DB_HOST=${DB_HOST}
 #       - DB_NAME=${DB_NAME}
@@ -53,22 +24,38 @@ services:
 #       - DB_PASSWORD=${DB_PASSWORD}
 #       - PYDEVD_DISABLE_FILE_VALIDATION=1
 #     env_file:
-#       - .env  
-#     depends_on:
-#       - db
-    
+#       - .env 
 
-#   db: # PostgreSQL Database
-#    image: postgres:16-alpine
-#    volumes: 
-#      - ./data/db:/var/lib/postgresql/data
-#    environment:
-#      - POSTGRES_DB=${POSTGRES_DB}
-#      - POSTGRES_USER=${POSTGRES_USER}
-#      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-#    env_file:
-#       - .env  
 
+# 개발용 
+
+#version: "3.11"
+services:
+  app:
+    build:
+      context: .
+      args:
+        - DEV=true
+    ports:
+      - "8000:8000"
+      - "3000:3000" # debugger
+    volumes:
+      - ./potato_project:/app
+    command: >
+      sh -c "python manage.py wait_for_db &&
+             python manage.py makemigrations &&
+             python manage.py migrate &&      
+             python -u manage.py runserver --noreload 0.0.0.0:8000"
+    environment:
+      - DB_HOST=${DB_HOST}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - PYDEVD_DISABLE_FILE_VALIDATION=1
+    env_file:
+      - .env  
+    depends_on:
+      - db
     
 
   db: # PostgreSQL Database
@@ -81,3 +68,16 @@ services:
      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
    env_file:
       - .env  
+
+    
+
+  # db: # PostgreSQL Database
+  #  image: postgres:16-alpine
+  #  volumes: 
+  #    - ./data/db:/var/lib/postgresql/data
+  #  environment:
+  #    - POSTGRES_DB=${POSTGRES_DB}
+  #    - POSTGRES_USER=${POSTGRES_USER}
+  #    - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+  #  env_file:
+  #     - .env  
