@@ -4,6 +4,7 @@ from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from rest_framework import generics, permissions, status
+from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
@@ -47,13 +48,9 @@ class TodoUpdateView(generics.UpdateAPIView):
         try:
             # datetime 객체 생성
             date = datetime.strptime(date_str, "%Y-%m-%d").date()
+            serializer.save(date=date)  # serializer에 날짜 저장
         except (ValueError, TypeError):
-            return Response(
-                {"error": "Invalid date format or missing date."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        serializer.save(date=date)
+            raise ValidationError({"error": "Invalid date format or missing date."})
 
 
 # 3. 투두리스트 항목 삭제
