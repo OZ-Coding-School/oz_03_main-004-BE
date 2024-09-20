@@ -27,7 +27,7 @@ class TodoCreateView(generics.CreateAPIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        serializer.save(user=self.request.user, date=date_obj)
+        serializer.save(user=self.request.user, date=date)
 
 
 # 2. 투두리스트 항목 수정 (UI에서 입력 받은 데이터 + 선택된 날짜로 수정)
@@ -50,10 +50,9 @@ class TodoUpdateView(generics.UpdateAPIView):
         except (ValueError, TypeError):
             return Response(
                 {"error": "Invalid date format or missing date."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+                status=status.HTTP_400_BAD_REQUEST,)
 
-        serializer.save(date=date_obj)
+        serializer.save(date=date)
 
 
 # 3. 투두리스트 항목 삭제
