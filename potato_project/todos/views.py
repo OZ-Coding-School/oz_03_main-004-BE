@@ -50,7 +50,8 @@ class TodoUpdateView(generics.UpdateAPIView):
         except (ValueError, TypeError):
             return Response(
                 {"error": "Invalid date format or missing date."},
-                status=status.HTTP_400_BAD_REQUEST,)
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         serializer.save(date=date)
 
