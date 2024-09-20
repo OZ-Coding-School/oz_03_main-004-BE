@@ -18,3 +18,5 @@ pytest
 pytest-django
 PyGithub>=1.55
 
+pytz
+
